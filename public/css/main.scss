@@ -1,0 +1,325 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import "styles/theme";
+@import "styles/bootstrap";
+@import "styles/variables";
+@import "styles/mixins";
+@import "styles/theme-components";
+@import "styles/examples";
+@import "styles/endpoints";
+@import "styles/schemas";
+
+body {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: $font-size-sm;
+}
+
+pre, code {
+    width: 100%;
+    word-break: break-all;
+    color: $gray;
+    font-size: $font-size-xs;
+    overflow: hidden;
+    //white-space: pre-wrap; /* css-3 */
+    //white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    ////white-space: -pre-wrap;      /* Opera 4-6 */
+    //white-space: -o-pre-wrap; /* Opera 7 */
+    //word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+.header {
+    padding: $spacer * 2 0;
+}
+
+.header__title {
+    margin: 0;
+    font-size: $font-size-h3;
+    font-weight: 700;
+}
+
+.header__subtitle {
+    margin: 0 0 $spacer;
+    padding: $spacer / 2 0 $spacer;
+    color: $gray;
+    border-bottom: 1px solid $gray-lighter;
+}
+
+.header__uri {
+    padding: 0 10px;
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 2;
+}
+
+.sidebar {
+    position: relative;
+    border-right: 1px solid #ccc;
+    transition: all 0.3s linear;
+    $root: &;
+    &-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 20px 15px 0;
+
+        //customizing the sidebar scrollbar
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 1px 0 3px $gray-light;
+            background: $scrollbar-custom-track;
+            border-radius: 0;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            width: 6px;
+            position: relative;
+            left: 1px;
+            border-radius: 1px;
+            -webkit-box-shadow: none;
+            background: $scrollbar-custom-thumb;
+        }
+    }
+    &.is-abs {
+        position: absolute;
+    }
+    &.is-fixed,
+    &.affix{
+        nav {
+            position: fixed;
+            top: 0;
+            left: $grid-gutter-width/2;
+            bottom: 0;
+            padding-right: 15px;
+            overflow-y: scroll;
+            width: 16.66667%;
+            min-width: 200px;
+
+
+            /*below mixin is an optional effect added to sidebar*/
+            //@include shrouded-element-fixed(16.66667%);
+        }
+    }
+}
+
+.resources {
+
+}
+
+.resources__header {
+    font-size: $font-size-sm;
+    color: $gray;
+    text-transform: uppercase;
+    margin: 0 0 $spacer;
+}
+
+.resources__list {
+    padding: 0;
+    list-style: none;
+    margin-bottom: 2 * $spacer;
+
+    li {
+        margin: $spacer / 2 0 $spacer;
+    }
+}
+
+.resources__resource {
+    cursor: pointer;
+    &.active {
+        font-weight: bold;
+    }
+    & > a {
+        text-decoration: none;
+        color: $body-color;
+    }
+    &:active, &:focus {
+        outline: none;
+    }
+    & > a::before{
+        content:"\25b8";
+        padding:0 $spacer/2 0 0;
+    }
+    &.active > a{
+        &::before{
+            content:"\25be";
+        }
+    }
+}
+.resources__resource > .resources__list__endpoints {
+    height:0;
+    overflow:hidden;
+}
+
+.resources__resource.active > .resources__list__endpoints {
+    height:auto;
+}
+
+.resources__list__endpoints {
+    font-size: $font-size-xs;
+    list-style: none;
+    padding: 0;
+    color: $gray;
+
+    li {
+        margin: $spacer / 2 0;
+        &.active a {
+            font-weight: 700;
+            color: $pitch-black;
+            text-decoration: none;
+        }
+    }
+
+    .label {
+        width: 46px;
+        text-transform: uppercase;
+        margin-right: $spacer-x / 2;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all 0.2s linear;
+        font-weight: normal;
+        word-break: break-all;
+
+        &:hover, &:focus {
+            text-decoration: underline;
+        }
+
+        //&:active {
+        //    text-decoration: none;
+        //}
+
+
+    }
+}
+
+.documentation {
+
+}
+
+.documentation__header {
+    position: relative;
+    margin: 0 0;
+    padding: $padding-center-sections;
+    font-size: $font-size-h2;
+    font-weight: 700;
+    width: 60%;
+    background: $gray-lighter;
+
+    .text-muted {
+        float: right;
+        font-size: $font-size-sm;
+    }
+
+    &:after {
+        @include empty-sidebar-right;
+        background-color: $gray-dark;
+        border-bottom: 1px solid $gray-middlescale;
+    }
+    &-full {
+        width: 100%;
+        &:after {
+            content: none;
+            display: none;
+        }
+    }
+}
+
+.documentation__content {
+    position: relative;
+    margin: 0 0;
+    padding: $padding-center-sections;
+    width: 60%;
+    display: inline-block;
+
+    &:after {
+        @include empty-sidebar-right;
+        background-color: $gray-dark;
+    }
+}
+
+.documentation__subheader {
+    font-size: $font-size-base;
+    font-weight: 700;
+    margin: $spacer 0;
+}
+
+.documentation__parameters {
+    margin-bottom: $spacer * 2;
+
+    thead {
+        th {
+            color: $brand-primary;
+            font-weight: 400;
+            text-transform: uppercase;
+            border-bottom-width: 1px;
+        }
+    }
+
+    th, td {
+        padding: $spacer / 2 $spacer;
+        border-top: 0;
+        border-bottom: 1px solid $table-border-color;
+    }
+}
+
+.documentation__parameters__nested {
+
+    td {
+
+        &:first-child {
+            padding-left: $spacer * 2;
+        }
+    }
+}
+
+.documentation__response {
+    border: 1px solid $table-border-color;
+    padding: 1rem;
+}
+
+.documentation__response__code {
+    font-size: $font-size-lg;
+    font-weight: 600;
+}
+
+.setTitle {
+    font-weight: bold;
+    padding: 0 15px 0 0;
+}
+
+.setDesc {
+    color: #999;
+}
+
+.footer {
+
+}
+
+.footer__text {
+    padding: $spacer 0;
+    margin: 0;
+    border-top: 1px solid $gray-lighter;
+    color: $gray-light;
+    text-align: right;
+
+    a {
+        margin: 0 $spacer / 4;
+    }
+}
+
+.hljs-number {
+    color: $brand-success;
+}
+
+.hljs-string {
+    color: $brand-primary;
+}
+
+.hljs-literal {
+    color: $brand-info;
+}

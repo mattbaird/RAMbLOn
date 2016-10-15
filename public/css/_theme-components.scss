@@ -1,0 +1,49 @@
+.label {
+    background: none;
+    border: 3px solid $label-default-bg;
+}
+
+.label-primary {
+    color: $label-primary-bg;
+    border-color: $label-primary-bg;
+}
+
+.label-success {
+    color: $label-success-bg;
+    border-color: $label-success-bg;
+}
+
+.label-warning {
+    color: $label-warning-bg;
+    border-color: $label-warning-bg;
+}
+
+.label-danger {
+    color: $label-danger-bg;
+    border-color: $label-danger-bg;
+}
+
+.label-info {
+    color: $label-info-bg;
+    border-color: $label-info-bg;
+}
+
+// success/ok response text/label
+.response-ok {
+    color: $label-success-bg;
+}
+
+// informational response text/label
+.response-info {
+    color: $label-info-bg;
+}
+
+// client error response text/label
+.response-errc {
+    color: darken($label-warning-bg, 10%);
+}
+
+// server error reponse text/label
+.response-errs {
+    color: $label-warning-bg;
+}

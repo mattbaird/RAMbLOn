@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <title>Atscale Design Center API Version 1.0</title>
+        <link rel="stylesheet" href="/css/main.css"></link>
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    </head>
+    <body data-spy="scroll" data-target="#resources-nav">
+        <header class="header">
+            <div class="container-fluid">
+                <h1 title="Protocols: {{.Protocols}}" class="header__title">Atscale Design Center API Version 1.0</h1>
+                <p class="header__subtitle"></p>
+                <span class="header__uri text-primary">{{.BaseURI}}</span>
+            </div>
+        </header>
+        <main>
+        <div class="container-fluid">
+            <div class="row"></div>
+            <div data-spy="affix" data-offset-top="200" class="col-md-2 sidebar">
+                <nav id="resources-nav" class="resources sidebar-content">
+                    <h1 class="resources__header">Resources</h1>
+                    <ul class="nav nav-stacked resources__list">
+                        {{ range $key, $value := .Resources}}
+                        <li class="resources__resource">
+                            <a href="#{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</a>
+                            <ul class="nav nav-stacked resources__list__endpoints">
+                                {{ range $methodKey, $methodValue := $value.Methods}}
+                                <li>
+                                    <span class="label label-primary">{{$methodKey}}</span>
+                                    <a href="#TODO">{{$methodValue.Description}}</a>
+                                </li>
+                                {{end}}
+                            </ul>
+                        </li>
+                        {{end}}
+                    </ul>
+                </nav>
+            </div>
+            {{ range $key, $value := .Resources}}
+            <div class="col-md-10 col-md-offset-2">
+                <section class="documentation row">
+                    <h1 id="{{$value.DisplayName | underscore}}" class="documentation__header">{{$value.DisplayName}}</h1>
+                    <div class="documentation__description">{{$value.Description}}</div>
+                    {{ range $methodKey, $methodValue := $value.Methods}}
+                    <div id="org-__orgId__-{{$key}}-{{$methodKey}}" class="documentation__endpoints">
+                        <div class="documentation__endpoints__params">
+                            <p class="documentation__endpoints__name">
+                                <span class="label label-primary">{{$methodKey}}</span>
+                            {{$key}}</p>
+                            <div class="documentation__endpoints__description">
+                            {{$methodValue.Description}}
+                            </div>
+                            <h2 class="documentation__subheader">URI Parameters</h2>
+                            <table class="documentation__parameters table table-bordered">
+                                <thead>
+                                    <tr><th>name</th><th>type</th></tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <h2 class="documentation__subheader">Query Parameters</h2>
+                            <table class="documentation__parameters table table-bordered">
+                                <thead>
+                                    <tr><th>name</th><th>type</th></tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+
+                            <h2 class="documentation__subheader">Response </h2>
+                            {{ range $responseKey, $responseValue := $methodValue.Responses}}
+                            <div class="documentation__response">
+                                <p class="documentation__response__code text-success">({{$responseKey}})</p>
+                            </div>
+                            {{end}}
+                        </div>
+                        <div class="documentation__endpoints__examples">
+                        </div>
+                    </div>
+                    {{end}}
+                </section>
+            </div>
+        </div>
+        {{end}}
+        <div class="col-md-10 col-md-offset-2">
+            <section id="allTypes" class="documentation row">
+                <h1 class="documentation__header">All Types</h1>
+                <div class="documentation__description">
+                    <span>All defined data types listed below</span>
+                </div>
+                <div id="typesContainer">
+                    <!--generate types table-->
+                    <section class="documentation">
+                        <div class="documentation__endpoints">
+                            <div class="documentation__endpoints__params">
+                                {{ range $key, $value := .Types.MapAPITypes}}
+                                <h2 id="{{$key}}" class="documentation__subheader">
+                                <span>{{$key}}</span>
+                                <span class="text-primary">*</span>
+                                </h2>
+                                <table class="documentation__parameters table">
+                                    <thead>
+                                        <tr><th>type</th><th>properties</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span>{{$value.Type}}</span>
+                                            </td>
+                                            <td>
+                                                <table class="documentation__parameters table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>name</th>
+                                                            <th>type</th>
+                                                            <th>enum</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {{ range $propKey, $propValue := $value.Properties.Mapdata}}
+                                                        <tr id="{{$propKey}}">
+                                                            <td>
+                                                                <span>{{$propKey}}</span>
+                                                                <span class="text-primary">*</span>
+                                                            </td>
+                                                            <td>{{$propValue.Type}}</td>
+                                                            <td>-</td>
+                                                        </tr>
+                                                        {{end}}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {{end}}
+                            </div>
+                            <div class="documentation__endpoints__examples"></div>
+                        </div>
+                        </section><!--generate types table-->
+                    </div>
+                </div>
+            </section>
+        </div>
+        </main>
+    <footer class="footer"></footer>
+    <script type="text/javascript">(function () {
+    //handle example tabs - prevent scrolling to hidden inputs, activate related content on click
+    function initTabs() {
+    $('label').click(function (e) {
+    e.preventDefault();
+    var forEl = $(this).attr('for');
+    $('#' + forEl).trigger('click');
+    $('.example__content[data-tab=' + forEl + ']').addClass('is-active').siblings().removeClass('is-active');
+    });
+    }
+    function initExpandableExamples() {
+    $('.documentation__endpoints__examples a.examples__toggle').click(function () {
+    toggleExpandExamples($(this).parent());
+    });
+    }
+    var EXPAND_TIMEOUT_MS = 500;
+    function toggleExpandExamples(example) {
+    var isExpanded = example.hasClass('is-expanded');
+    if (example) {
+    if (isExpanded) {
+    example.addClass('is-collapsing').removeClass('is-expanded');
+    setTimeout(function () {
+    example.parent().height('');
+    example.removeClass('is-collapsing');
+    }, EXPAND_TIMEOUT_MS);
+    } else {
+    var endpointHeight = example.outerHeight();
+    example.parent().height(endpointHeight);
+    example.addClass('is-expanded');
+    }
+    }
+    }
+    //initialize scripts
+    $(document).ready(function () {
+    initTabs();
+    initExpandableExamples();
+    $('body').scrollspy({target:'#resources-nav'});
+    });
+    })($);</script>
+</body>
+</html>
