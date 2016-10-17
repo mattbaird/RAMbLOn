@@ -1,4 +1,4 @@
-package parser
+package model
 
 // AnnotationTypes map of AnnotationType
 type AnnotationTypes map[string]*AnnotationType
@@ -13,19 +13,6 @@ func (t AnnotationTypes) IsEmpty() bool {
 		}
 	}
 	return true
-}
-
-var _ fixEmptyAnnotation = AnnotationTypes{}
-
-func (t AnnotationTypes) fixEmptyAnnotation() (err error) {
-	for name, elem := range t {
-		if elem == nil {
-			elem = &AnnotationType{}
-			elem.setType(TypeString)
-			t[name] = elem
-		}
-	}
-	return
 }
 
 // AnnotationType wrap types defined in spec
@@ -61,10 +48,4 @@ func (t *AnnotationType) UnmarshalYAML(unmarshaler func(interface{}) error) (err
 func (t AnnotationType) IsEmpty() bool {
 	return t.APIType.IsEmpty() &&
 		t.AllowedTargets.IsEmpty()
-}
-
-var _ checkAnnotation = AnnotationType{}
-
-func (t AnnotationType) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationAnnotationType)
 }

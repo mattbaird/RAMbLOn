@@ -1,4 +1,4 @@
-package parser
+package model
 
 import "github.com/tsaikd/KDGoLib/enumutil"
 

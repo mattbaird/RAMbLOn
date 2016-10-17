@@ -9,7 +9,7 @@ import (
 	"html/template"
 	"strings"
 
-	parser "github.com/mattbaird/RAMbLOn/ramlv1.0/model"
+	parser "github.com/mattbaird/RAMbLOn/ramlv1.0"
 	"github.com/mattbaird/RAMbLOn/ramlv1.0/parserConfig"
 )
 
@@ -34,6 +34,7 @@ func main() {
 	}))
 	m.Get("/", func(r render.Render) {
 		ramlFile := "/home/matthew/code/go/src/github.com/AtScaleInc/modeler/api-docs/api.raml"
+		fmt.Printf("parsing:%v\n", ramlFile)
 		var checkRAMLVersion bool
 		var allowIntToBeNum bool
 		var checkOptions = []parser.CheckValueOption{}
@@ -70,7 +71,9 @@ func main() {
 			r.HTML(500, "500", err)
 			return
 		}
-		fmt.Printf("json:%v\n", string(jsonBytes))
+		if false {
+			fmt.Printf("json:%v\n", string(jsonBytes))
+		}
 		r.HTML(200, "index", rootdoc)
 	})
 	m.Run()

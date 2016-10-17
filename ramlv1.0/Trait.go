@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Traits map of Trait
 type Traits map[string]*Trait
@@ -60,46 +60,6 @@ func (t *Trait) UnmarshalYAML(unmarshaler func(interface{}) error) (err error) {
 func (t Trait) IsEmpty() bool {
 	return t.String == "" &&
 		t.TraitRAML.IsEmpty()
-}
-
-var _ fillTrait = &Trait{}
-
-func (t *Trait) fillTrait(library Library) (err error) {
-	if t == nil {
-		return
-	}
-
-	name := t.String
-	if name == "" {
-		return
-	}
-
-	trait, err := library.GetTrait(name)
-	if err != nil {
-		return
-	}
-
-	*t = trait
-	t.String = name
-
-	return
-}
-
-var _ checkAnnotation = Trait{}
-
-func (t Trait) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationTrait)
-}
-
-var _ checkUnusedTrait = Trait{}
-
-func (t Trait) checkUnusedTrait(conf PostProcessConfig) (err error) {
-	if t.String == "" {
-		return
-	}
-	traitUsage := conf.TraitUsage()
-	delete(traitUsage, conf.Library().Prefix()+t.String)
-	return
 }
 
 // TraitRAML like a method, can provide method-level nodes such as description,

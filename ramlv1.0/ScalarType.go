@@ -1,4 +1,4 @@
-package parser
+package model
 
 // ScalarType RAML defines a set of built-in scalar types, each of which has
 // a predefined set of restrictions. All types, except the file type,

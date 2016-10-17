@@ -1,4 +1,4 @@
-package parser
+package model
 
 func mergeAPIType(dst *APIType, fromList ...APIType) {
 	for _, from := range fromList {

@@ -1,4 +1,4 @@
-package parser
+package model
 
 // ObjectType All types that have the built-in object type at the root of
 // their inheritance tree can use the following facets in their type

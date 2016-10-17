@@ -1,4 +1,4 @@
-package parser
+package model
 
 // String A JSON string with the following additional facets:
 type String struct {

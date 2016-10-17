@@ -1,4 +1,4 @@
-package parser
+package model
 
 // QueryParameters map of QueryParameter
 type QueryParameters struct {

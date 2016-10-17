@@ -1,4 +1,4 @@
-package parser
+package model
 
 // TypeDeclaration A type declaration references another type, or wraps or extends
 // another type by adding functional facets (e.g. properties) or non-functional
@@ -79,10 +79,4 @@ func (t *TypeDeclaration) IsEmpty() bool {
 		t.Annotations.IsEmpty() &&
 		t.Facets.IsEmpty() &&
 		t.XML.IsEmpty()
-}
-
-var _ checkAnnotation = TypeDeclaration{}
-
-func (t TypeDeclaration) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationTypeDeclaration)
 }

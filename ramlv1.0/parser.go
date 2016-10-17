@@ -1,7 +1,8 @@
-package parser
+package model
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"reflect"
@@ -11,6 +12,10 @@ import (
 	"github.com/tsaikd/KDGoLib/futil"
 	"github.com/tsaikd/yaml"
 )
+
+// overall parser strategy is to dereference all includes
+// and then create the model, rather than the complexity of the
+// recursive post-processing
 
 // NewParser create Parser instance
 func NewParser() Parser {
@@ -96,6 +101,7 @@ func (t parserImpl) ParseFile(filePath string) (rootdoc RootDocument, err error)
 	var workdir string
 	var fileData []byte
 
+	// load the RAML with the !include directives
 	if futil.IsDir(filePath) {
 		workdir = filePath
 		if fileData, err = LoadRAMLFromDir(filePath); err != nil {
@@ -145,12 +151,29 @@ func (t parserImpl) ParseData(data []byte, workdir string) (rootdoc RootDocument
 		return rootdoc, ErrorYAMLParseFailed1.New(err, extraInfo)
 	}
 
-	conf := newPostProcessConfig(&t, &rootdoc, nil, nil, nil)
-	if err = postProcess(&rootdoc, conf); err != nil {
-		return
-	}
-
+	rootdoc, err = t.ResolveIncludes(rootdoc)
+	rootdoc.Resources.FillURIParams()
 	return
+}
+
+func (t parserImpl) ResolveIncludes(doc RootDocument) (rootdoc RootDocument, err error) {
+	if doc.Types.includeTag {
+		fpath := filepath.Join(doc.WorkingDirectory, doc.Types.Value.String)
+		fmt.Printf("fillTypes includeTag:%v\n", fpath)
+		var fdata []byte
+		fdata, err = ioutil.ReadFile(fpath)
+		if err == nil {
+			// unmarshal the types
+			// MBAIRD: this is wrong,
+			fmt.Printf("unmarshaling\n")
+			doc.Types.MapAPITypes = MapAPITypes{}
+			err = yaml.Unmarshal(fdata, &doc.Types.MapAPITypes)
+		} else {
+			fmt.Printf("Error:%v\n", err)
+		}
+
+	}
+	return doc, err
 }
 
 func parserConfigSet(field interface{}, value interface{}) (err error) {

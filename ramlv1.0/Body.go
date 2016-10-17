@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Bodies map of Body
 type Bodies map[string]*Body
@@ -62,33 +62,6 @@ func (t Bodies) IsEmpty() bool {
 		}
 	}
 	return true
-}
-
-func (t Bodies) checkAnnotationTargetLocation(targetLocation TargetLocation) (err error) {
-	for _, body := range t {
-		if err = body.Annotations.checkAnnotationTargetLocation(targetLocation); err != nil {
-			return
-		}
-	}
-	return nil
-}
-
-var _ fixDefaultMediaType = Bodies{}
-
-func (t Bodies) fixDefaultMediaType(conf PostProcessConfig) (err error) {
-	if t == nil {
-		return
-	}
-
-	if body, exist := t["DEFAULT"]; exist {
-		if conf.RootDocument().MediaType == "" {
-			return ErrorEmptyRootDocumentMediaType.New(nil)
-		}
-		delete(t, "DEFAULT")
-		t[conf.RootDocument().MediaType] = body
-	}
-
-	return
 }
 
 // Body used for Bodies.

@@ -1,9 +1,8 @@
-package parser
+package model
 
 import (
 	"bytes"
 	"encoding/gob"
-	"strings"
 
 	"github.com/tsaikd/KDGoLib/jsonex"
 	"github.com/tsaikd/yaml"
@@ -92,38 +91,12 @@ func (t Properties) Slice() []*Property {
 	return t.propertiesSliceData
 }
 
-var _ fixRequiredBySyntax = &Properties{}
-
-func (t Properties) fixRequiredBySyntax() (err error) {
-	for name, property := range t.Mapdata {
-		if strings.HasSuffix(name, "?") {
-			property.Required = false
-			trimName := strings.TrimSuffix(name, "?")
-			property.Name = trimName
-			delete(t.Mapdata, name)
-			t.Mapdata[trimName] = property
-		}
-	}
-	return
-}
-
 type propertiesSliceData []*Property
 
 // Property of a object type
 type Property struct {
 	APIType
 	PropertyExtra
-}
-
-// BeforeUnmarshalYAML implement yaml Initiator
-func (t *Property) BeforeUnmarshalYAML() (err error) {
-	if err = t.APIType.BeforeUnmarshalYAML(); err != nil {
-		return
-	}
-	if err = t.PropertyExtra.BeforeUnmarshalYAML(); err != nil {
-		return
-	}
-	return
 }
 
 // UnmarshalYAML implement yaml unmarshaler

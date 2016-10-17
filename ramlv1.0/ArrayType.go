@@ -1,4 +1,4 @@
-package parser
+package model
 
 // ArrayType Array types are declared by using either the array qualifier []
 // at the end of a type expression or array as the value of a type facet.

@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Methods map of Method
 type Methods map[string]*Method
@@ -81,27 +81,4 @@ func (t Method) IsEmpty() bool {
 		t.Protocols.IsEmpty() &&
 		t.Is.IsEmpty() &&
 		t.SecuredBy.IsEmpty()
-}
-
-var _ checkTypoError = Method{}
-
-func (t Method) checkTypoError() (err error) {
-	if !t.TypoCheck.IsEmpty() {
-		return ErrorTypo2.New(nil, "Method", t.TypoCheck.Names())
-	}
-	return
-}
-
-var _ checkAnnotation = Method{}
-
-func (t Method) checkAnnotation(conf PostProcessConfig) (err error) {
-	if err = t.Annotations.checkAnnotationTargetLocation(TargetLocationMethod); err != nil {
-		return
-	}
-	if err = t.Bodies.checkAnnotationTargetLocation(TargetLocationRequestBody); err != nil {
-		if err = t.Bodies.checkAnnotationTargetLocation(TargetLocationTypeDeclaration); err != nil {
-			return
-		}
-	}
-	return nil
 }

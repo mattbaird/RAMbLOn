@@ -1,4 +1,4 @@
-package parser
+package model
 
 // FileType The ​file​ type can constrain the content to send through forms.
 // When this type is used in the context of web forms it SHOULD be represented

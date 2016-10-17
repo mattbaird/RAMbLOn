@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Headers map of Header
 type Headers struct {

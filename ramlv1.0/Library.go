@@ -1,11 +1,7 @@
-package parser
+package model
 
 import (
-	"io/ioutil"
-	"path/filepath"
 	"strings"
-
-	"github.com/tsaikd/yaml"
 )
 
 // Libraries map of Library
@@ -23,6 +19,7 @@ func (t Libraries) IsEmpty() bool {
 	return true
 }
 
+/*
 var _ loadExternalUse = Libraries{}
 
 func (t Libraries) loadExternalUse(conf PostProcessConfig) (err error) {
@@ -42,7 +39,7 @@ func (t Libraries) loadExternalUse(conf PostProcessConfig) (err error) {
 	}
 	return
 }
-
+*/
 // Library wrap LibraryRAML because LibraryRAML may be a string for external library file
 type Library struct {
 	Name string `json:",omitempty"`
@@ -98,33 +95,6 @@ func (t Library) Prefix() string {
 		return ""
 	}
 	return t.Name + "."
-}
-
-var _ checkUnusedAnnotation = Library{}
-
-func (t Library) checkUnusedAnnotation(conf PostProcessConfig) (err error) {
-	annotationUsage := conf.AnnotationUsage()
-	for name := range t.AnnotationTypes {
-		annotationUsage[name] = true
-	}
-	return
-}
-
-var _ checkUnusedTrait = Library{}
-
-func (t Library) checkUnusedTrait(conf PostProcessConfig) (err error) {
-	prefix := t.Prefix()
-	traitUsage := conf.TraitUsage()
-	for name := range t.Traits {
-		traitUsage[prefix+name] = true
-	}
-	return
-}
-
-var _ checkAnnotation = Library{}
-
-func (t Library) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationLibrary)
 }
 
 // LibraryRAML RAML libraries are used to combine any collection of data type

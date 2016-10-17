@@ -6,6 +6,7 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
         <title>Atscale Design Center API Version 1.0</title>
         <link rel="stylesheet" href="/css/main.css"></link>
+        <link rel="stylesheet" href="/css/extra.css"></link>
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     </head>
@@ -57,28 +58,44 @@
                             <h2 class="documentation__subheader">URI Parameters</h2>
                             <table class="documentation__parameters table table-bordered">
                                 <thead>
-                                    <tr><th>name</th><th>type</th></tr>
+                                    <tr><th>name</th><th>type</th><th>description</th></tr>
                                 </thead>
                                 <tbody>
+                                    {{range $uriParamKey, $uriParamValue := $value.URIParameters.MapAPITypes}}
+                                    <tr><td>{{$uriParamKey}}</td><td>{{$uriParamValue.Type}}</td><td>{{$uriParamValue.Description}}</td></tr>
+                                    {{end}}
                                 </tbody>
                             </table>
+                            {{if $methodValue.QueryParameters.Mapdata}}
                             <h2 class="documentation__subheader">Query Parameters</h2>
                             <table class="documentation__parameters table table-bordered">
                                 <thead>
-                                    <tr><th>name</th><th>type</th></tr>
+                                    <tr><th>name</th><th>type</th><th>description</th></tr>
                                 </thead>
                                 <tbody>
+                                    {{range $queryParamKey, $queryParamValue := $methodValue.QueryParameters.Mapdata}}
+                                    <tr><td>{{$queryParamKey}}</td><td>{{$queryParamValue.Type}}</td><td>{{$queryParamValue.Description}}</td></tr>
+                                    {{end}}
                                 </tbody>
                             </table>
-
+                            {{end}}
                             <h2 class="documentation__subheader">Response </h2>
                             {{ range $responseKey, $responseValue := $methodValue.Responses}}
-                            <div class="documentation__response">
-                                <p class="documentation__response__code text-success">({{$responseKey}})</p>
-                            </div>
+                                <div class="documentation__response__wrapper">
+                                    <div class="documentation__response">
+                                        <p class="documentation__response__code text-success">({{$responseKey}})</p>
+                                        {{ range $responseType, $body := $responseValue.Bodies}}
+                                            <p>{{$responseType}}</p>
+                                        {{end}}
+                                        <p>{{$responseValue.Description}}</p>
+                                    </div>
+                                    {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
+                                    <div class="documentation__endpoints__examples">
+                                        <p>{{$bodyValue.Example}}</p>
+                                    </div>
+                                    {{end}}
+                                </div>
                             {{end}}
-                        </div>
-                        <div class="documentation__endpoints__examples">
                         </div>
                     </div>
                     {{end}}

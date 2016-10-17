@@ -1,4 +1,4 @@
-package parser
+package model
 
 import "github.com/tsaikd/KDGoLib/jsonex"
 
@@ -56,18 +56,4 @@ func (t Response) IsEmpty() bool {
 		t.Annotations.IsEmpty() &&
 		t.Headers.IsEmpty() &&
 		t.Bodies.IsEmpty()
-}
-
-var _ checkAnnotation = Response{}
-
-func (t Response) checkAnnotation(conf PostProcessConfig) (err error) {
-	if err = t.Annotations.checkAnnotationTargetLocation(TargetLocationResponse); err != nil {
-		return
-	}
-	if err = t.Bodies.checkAnnotationTargetLocation(TargetLocationResponseBody); err != nil {
-		if err = t.Bodies.checkAnnotationTargetLocation(TargetLocationTypeDeclaration); err != nil {
-			return
-		}
-	}
-	return nil
 }

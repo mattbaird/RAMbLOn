@@ -1,0 +1,11 @@
+.documentation__response__wrapper {
+	display: flex;
+}
+
+.documentation__response {
+	flex: 3 0 0;
+}
+
+.documentation__endpoints__examples {
+	flex: 1 0 0;
+}

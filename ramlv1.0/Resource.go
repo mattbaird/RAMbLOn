@@ -1,6 +1,9 @@
-package parser
+package model
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 // Resources map of Resource
 type Resources map[string]*Resource
@@ -17,16 +20,17 @@ func (t Resources) IsEmpty() bool {
 	return true
 }
 
-var _ fillURIParams = Resources{}
-
-func (t Resources) fillURIParams() (err error) {
+func (t Resources) FillURIParams() (err error) {
 	if t == nil {
 		return
 	}
 	regexpURIParam := regexp.MustCompile(`{(\w+)}`)
 	for name, elem := range t {
-		if elem.URIParameters.MapAPITypes == nil {
-			elem.URIParameters = APITypes{}
+		if name == "/org/{orgId}/engine/{engineId}/env/{envId}/project/{projectId}" {
+			fmt.Printf("Resource: %s:%+v\n", name, elem.URIParameters)
+			if elem.URIParameters.MapAPITypes == nil {
+				elem.URIParameters.MapAPITypes = make(map[string]*APIType)
+			}
 		}
 
 		matches := regexpURIParam.FindAllStringSubmatch(name, -1)
@@ -35,8 +39,19 @@ func (t Resources) fillURIParams() (err error) {
 				continue
 			}
 			paramName := matchParams[1]
-			if _, exist := elem.URIParameters.get(paramName); !exist {
-				elem.URIParameters.MapAPITypes[paramName] = NewAPIType()
+			if _, exist := elem.URIParameters.MapAPITypes[paramName]; !exist {
+				if elem.URIParameters.MapAPITypes == nil {
+					elem.URIParameters.MapAPITypes = make(map[string]*APIType)
+				}
+				_, ok := elem.URIParameters.MapAPITypes[paramName]
+				if !ok {
+					if name == "/org/{orgId}/engine/{engineId}/env/{envId}/project/{projectId}" {
+						fmt.Printf("Didn't find %s: creating new\n", paramName)
+					}
+					elem.URIParameters.MapAPITypes[paramName] = NewAPIType()
+					elem.URIParameters.MapAPITypes[paramName].Type = elem.URIParameters.Value.get(paramName).Type
+					elem.URIParameters.MapAPITypes[paramName].Description = elem.URIParameters.Value.get(paramName).Description
+				}
 			}
 		}
 	}
@@ -73,7 +88,7 @@ type Resource struct {
 	Is IsTraits `yaml:"is" json:"is,omitempty"`
 
 	// The resource type that this resource inherits.
-	Type Unimplement `yaml:"type" json:"type,omitempty"`
+	Type APIType `yaml:"type" json:"type,omitempty"`
 
 	// The security schemes that apply to all methods declared (implicitly or
 	// explicitly) for this resource.
@@ -98,10 +113,4 @@ func (t Resource) IsEmpty() bool {
 		t.SecuredBy.IsEmpty() &&
 		t.URIParameters.IsEmpty() &&
 		t.Resources.IsEmpty()
-}
-
-var _ checkAnnotation = Resource{}
-
-func (t Resource) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationResource)
 }

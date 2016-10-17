@@ -1,6 +1,7 @@
-package parser
+package model
 
 import (
+	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -196,6 +197,22 @@ func (t Value) MarshalJSON() ([]byte, error) {
 	default:
 		return jsonex.Marshal(nil)
 	}
+}
+
+type UriParameter struct {
+	Description string
+	Type        string
+}
+
+func (t *Value) get(name string) UriParameter {
+	v, ok := t.Map[name]
+	if ok {
+		fmt.Printf("%+v\n", v)
+		t := v.Map["type"]
+		d := v.Map["description"]
+		return UriParameter{Description: d.String, Type: t.String}
+	}
+	return UriParameter{}
 }
 
 // UnmarshalYAML unmarshal from YAML

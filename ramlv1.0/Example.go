@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Examples The OPTIONAL examples facet can be used to attach multiple examples
 // to a type declaration. Its value is a map of key-value pairs, where each key
@@ -51,12 +51,6 @@ func (t SingleExample) IsEmpty() bool {
 		t.Description == "" &&
 		t.Annotations.IsEmpty() &&
 		t.Value.IsEmpty()
-}
-
-var _ checkAnnotation = SingleExample{}
-
-func (t SingleExample) checkAnnotation(conf PostProcessConfig) (err error) {
-	return t.Annotations.checkAnnotationTargetLocation(TargetLocationExample)
 }
 
 // Example wrap SingleExample for unmarshal YAML
