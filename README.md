@@ -32,4 +32,4 @@ go get github.com/mattbaird/RAMbLOn
 go run ramblon.go
 ```
 
-Navigate to (http://localhost:3000)
+Navigate to [http://localhost:3000](http://localhost:3000)
