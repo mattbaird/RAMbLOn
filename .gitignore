@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+RAMbLOn
+gin-bin
+
+/ramlv1.0/raml-examples/atscale
