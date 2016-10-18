@@ -108,7 +108,9 @@ func main() {
 			"directory": directory,
 			"apis":      apis})
 	})
-
+	m.NotFound(func(r render.Render) {
+		r.HTML(404, "404", nil)
+	})
 	m.Get("/api/:directory/:name", func(r render.Render, params martini.Params) {
 		directory := params["directory"]
 		name := params["name"]
