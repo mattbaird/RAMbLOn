@@ -4,16 +4,19 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
-        <title>Atscale Design Center API Version 1.0</title>
+        <title>{{.raml.Title}}</title>
         <link rel="stylesheet" href="/css/main.css"></link>
         <link rel="stylesheet" href="/css/extra.css"></link>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="/js/index.js"></script>
+        <script src="/js/autobahn.min.jgz"></script>
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     </head>
     <body data-spy="scroll" data-target="#resources-nav">
         <header class="header">
             <div class="container-fluid">
-                <h1 title="Protocols: {{.Protocols}}" class="header__title">Atscale Design Center API Version 1.0</h1>
+                <h1 title="Protocols: {{.Protocols}}" class="header__title">{{.raml.Title}}</h1>
                 <p class="header__subtitle"></p>
                 <span class="header__uri text-primary">{{.BaseURI}}</span>
             </div>
