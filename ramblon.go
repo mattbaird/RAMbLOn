@@ -7,6 +7,8 @@ import (
 	"github.com/martini-contrib/render"
 	"github.com/tsaikd/KDGoLib/jsonex"
 	"html/template"
+	"io/ioutil"
+	"os"
 	"strings"
 
 	parser "github.com/mattbaird/RAMbLOn/ramlv1.0"
@@ -75,6 +77,86 @@ func main() {
 			fmt.Printf("json:%v\n", string(jsonBytes))
 		}
 		r.HTML(200, "index", rootdoc)
+	})
+	m.Get("/browse", func(r render.Render, params martini.Params) {
+		files, err := ioutil.ReadDir("./ramlv1.0/raml-examples/")
+		if err != nil {
+			fmt.Printf("error:%v\n", err)
+		}
+		var directories []os.FileInfo
+		for _, file := range files {
+			if file.IsDir() {
+				directories = append(directories, file)
+			}
+		}
+		r.HTML(200, "browse", directories)
+	})
+
+	m.Get("/browse/:directory", func(r render.Render, params martini.Params) {
+		directory := params["directory"]
+		files, err := ioutil.ReadDir(fmt.Sprintf("./ramlv1.0/raml-examples/%s", directory))
+		if err != nil {
+			fmt.Printf("error:%v\n", err)
+		}
+		var apis []os.FileInfo
+		for _, file := range files {
+			if !file.IsDir() {
+				apis = append(apis, file)
+			}
+		}
+		r.HTML(200, "browseapi", map[string]interface{}{
+			"directory": directory,
+			"apis":      apis})
+	})
+
+	m.Get("/api/:directory/:name", func(r render.Render, params martini.Params) {
+		directory := params["directory"]
+		name := params["name"]
+		ramlFile := fmt.Sprintf("./ramlv1.0/raml-examples/%s/%s", directory, name)
+		fmt.Printf("file is:%s\n", ramlFile)
+		var checkRAMLVersion bool
+		var allowIntToBeNum bool
+		var checkOptions = []parser.CheckValueOption{}
+		var err error
+
+		ramlParser := parser.NewParser()
+
+		if allowIntToBeNum {
+			checkOptions = append(checkOptions, parser.CheckValueOptionAllowIntegerToBeNumber(true))
+		}
+
+		if err = ramlParser.Config(parserConfig.CheckRAMLVersion, checkRAMLVersion); err != nil {
+			pretty.Printf("error during config[CheckRAMLVersion]:%v", err)
+			r.HTML(500, "500", err)
+			return
+		}
+
+		if err = ramlParser.Config(parserConfig.CheckValueOptions, checkOptions); err != nil {
+			pretty.Printf("error during config[CheckValueOptions]:%v", err)
+			r.HTML(500, "500", err)
+			return
+		}
+
+		rootdoc, err := ramlParser.ParseFile(ramlFile)
+		if err != nil {
+			pretty.Printf("error during ParseFile:%v", err)
+			r.HTML(500, "500", err)
+			return
+		}
+
+		jsonBytes, err := jsonex.MarshalIndent(rootdoc, "", "  ")
+		if err != nil {
+			pretty.Printf("error during MarshalIndent:%v", err)
+			r.HTML(500, "500", err)
+			return
+		}
+		if false {
+			fmt.Printf("json:%v\n", string(jsonBytes))
+		}
+		r.HTML(200, "index", map[string]interface{}{
+			"directory": directory,
+			"name":      name,
+			"raml":      rootdoc})
 	})
 	m.Run()
 }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <title>Atscale Design Center API Version 1.0</title>
+        <link rel="stylesheet" href="/css/main.css"></link>
+        <link rel="stylesheet" href="/css/extra.css"></link>
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    </head>
+    <body data-spy="scroll" data-target="#resources-nav">
+        <header class="header">
+            <div class="container-fluid">
+                <h1 title="Browse RAML" class="header__title">Browse RAML</h1>
+                <p class="header__subtitle"></p>
+            </div>
+        </header>
+        <main>
+        {{ range $api := .apis }}
+            <li><a href="/api/{{$.directory}}/{{$api.Name}}">{{$api.Name}}</a></li>
+        {{ end }}
+        </main>
+</body>
+</html>

@@ -25,7 +25,7 @@
                 <nav id="resources-nav" class="resources sidebar-content">
                     <h1 class="resources__header">Resources</h1>
                     <ul class="nav nav-stacked resources__list">
-                        {{ range $key, $value := .Resources}}
+                        {{ range $key, $value := .raml.Resources}}
                         <li class="resources__resource">
                             <a href="#{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</a>
                             <ul class="nav nav-stacked resources__list__endpoints">
@@ -41,7 +41,7 @@
                     </ul>
                 </nav>
             </div>
-            {{ range $key, $value := .Resources}}
+            {{ range $key, $value := .raml.Resources}}
             <div class="col-md-10 col-md-offset-2">
                 <section class="documentation row">
                     <h1 id="{{$value.DisplayName | underscore}}" class="documentation__header">{{$value.DisplayName}}</h1>
@@ -85,14 +85,19 @@
                                     <div class="documentation__response">
                                         <p class="documentation__response__code text-success">({{$responseKey}})</p>
                                         {{ range $responseType, $body := $responseValue.Bodies}}
-                                            <p>{{$responseType}}</p>
+                                            <p>Type: {{$responseType}}</p>
                                         {{end}}
                                         <p>{{$responseValue.Description}}</p>
                                     </div>
                                     {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
+                                    {{if $bodyValue.Example.Value.String}}
                                     <div class="documentation__endpoints__examples">
-                                        <p>{{$bodyValue.Example}}</p>
+                                        <h2>Example</h2>
+                                        <p>
+                                            <pre>{{$bodyValue.Example.Value.String}}</pre>
+                                        </p>
                                     </div>
+                                    {{end}}
                                     {{end}}
                                 </div>
                             {{end}}
