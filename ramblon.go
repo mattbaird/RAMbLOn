@@ -6,6 +6,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/kr/pretty"
 	"github.com/martini-contrib/render"
+	"github.com/satori/go.uuid"
 	"github.com/tsaikd/KDGoLib/jsonex"
 	"html/template"
 	"io/ioutil"
@@ -164,20 +165,24 @@ func main() {
 		if false {
 			fmt.Printf("json:%v\n", string(jsonBytes))
 		}
+		u1 := uuid.NewV4()
+		clientUUID := u1.String()
 		r.HTML(200, "index", map[string]interface{}{
-			"directory": directory,
-			"name":      name,
-			"raml":      rootdoc})
+			"directory":  directory,
+			"name":       name,
+			"raml":       rootdoc,
+			"clientUUID": clientUUID})
 	})
 
 	// Create the chat
 	projects := newProjects()
 
-	// This is the sockets connection for the room, it is a json mapping to sockets.
-	m.Get("/sockets/projects/:name/:clientname", sockets.JSON(Message{}), func(params martini.Params,
+	// This is the sockets connection for the project, it is a json mapping to sockets.
+	m.Get("/sockets/projects/:directory/:project/:clientUUID", sockets.JSON(Message{}), func(params martini.Params,
 		receiver <-chan *Message, sender chan<- *Message, done <-chan bool, disconnect chan<- int, err <-chan error) (int, string) {
-		client := &Client{params["clientname"], receiver, sender, done, err, disconnect}
-		r := projects.getProject(params["name"])
+		fmt.Printf("called\n")
+		client := &Client{params["clientUUID"], receiver, sender, done, err, disconnect}
+		r := projects.getProject(params["project"])
 		r.appendClient(client)
 
 		// A single select can be used to do all the messaging

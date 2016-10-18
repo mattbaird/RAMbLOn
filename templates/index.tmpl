@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="/css/extra.css"></link>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="/js/index.js"></script>
-        <script src="/js/autobahn.min.jgz"></script>
+        <script src="/js/project.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     </head>
@@ -56,7 +56,7 @@
                                 <span class="label label-primary">{{$methodKey}}</span>
                             {{$key}}</p>
                             <div class="documentation__endpoints__description">
-                            {{$methodValue.Description}}
+                                {{$methodValue.Description}}
                             </div>
                             <h2 class="documentation__subheader">URI Parameters</h2>
                             <table class="documentation__parameters table table-bordered">
@@ -84,133 +84,142 @@
                             {{end}}
                             <h2 class="documentation__subheader">Response </h2>
                             {{ range $responseKey, $responseValue := $methodValue.Responses}}
-                                <div class="documentation__response__wrapper">
-                                    <div class="documentation__response">
-                                        <p class="documentation__response__code text-success">({{$responseKey}})</p>
-                                        {{ range $responseType, $body := $responseValue.Bodies}}
-                                            <p>Type: {{$responseType}}</p>
-                                        {{end}}
-                                        <p>{{$responseValue.Description}}</p>
-                                    </div>
-                                    {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
-                                    {{if $bodyValue.Example.Value.String}}
-                                    <div class="documentation__endpoints__examples">
-                                        <h2>Example</h2>
-                                        <p>
-                                            <pre>{{$bodyValue.Example.Value.String}}</pre>
-                                        </p>
-                                    </div>
+                            <div class="documentation__response__wrapper">
+                                <div class="documentation__response">
+                                    <p class="documentation__response__code text-success">({{$responseKey}})</p>
+                                    {{ range $responseType, $body := $responseValue.Bodies}}
+                                    <p>Type: {{$responseType}}</p>
                                     {{end}}
-                                    {{end}}
+                                    <p>{{$responseValue.Description}}</p>
                                 </div>
+                                {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
+                                {{if $bodyValue.Example.Value.String}}
+                                <div class="documentation__endpoints__examples">
+                                    <h2>Example</h2>
+                                    <p>
+                                    <pre>{{$bodyValue.Example.Value.String}}</pre>
+                                </p>
+                            </div>
+                            {{end}}
                             {{end}}
                         </div>
-                    </div>
-                    {{end}}
-                </section>
-            </div>
-        </div>
-        {{end}}
-        <div class="col-md-10 col-md-offset-2">
-            <section id="allTypes" class="documentation row">
-                <h1 class="documentation__header">All Types</h1>
-                <div class="documentation__description">
-                    <span>All defined data types listed below</span>
-                </div>
-                <div id="typesContainer">
-                    <!--generate types table-->
-                    <section class="documentation">
-                        <div class="documentation__endpoints">
-                            <div class="documentation__endpoints__params">
-                                {{ range $key, $value := .Types.MapAPITypes}}
-                                <h2 id="{{$key}}" class="documentation__subheader">
-                                <span>{{$key}}</span>
-                                <span class="text-primary">*</span>
-                                </h2>
-                                <table class="documentation__parameters table">
-                                    <thead>
-                                        <tr><th>type</th><th>properties</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <span>{{$value.Type}}</span>
-                                            </td>
-                                            <td>
-                                                <table class="documentation__parameters table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>name</th>
-                                                            <th>type</th>
-                                                            <th>enum</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {{ range $propKey, $propValue := $value.Properties.Mapdata}}
-                                                        <tr id="{{$propKey}}">
-                                                            <td>
-                                                                <span>{{$propKey}}</span>
-                                                                <span class="text-primary">*</span>
-                                                            </td>
-                                                            <td>{{$propValue.Type}}</td>
-                                                            <td>-</td>
-                                                        </tr>
-                                                        {{end}}
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {{end}}
-                            </div>
-                            <div class="documentation__endpoints__examples"></div>
-                        </div>
-                        </section><!--generate types table-->
+                        {{end}}
                     </div>
                 </div>
+                {{end}}
             </section>
         </div>
-        </main>
-    <footer class="footer"></footer>
-    <script type="text/javascript">(function () {
+    </div>
+    {{end}}
+    <div class="col-md-10 col-md-offset-2">
+        <section id="allTypes" class="documentation row">
+            <h1 class="documentation__header">All Types</h1>
+            <div class="documentation__description">
+                <span>All defined data types listed below</span>
+            </div>
+            <div id="typesContainer">
+                <!--generate types table-->
+                <section class="documentation">
+                    <div class="documentation__endpoints">
+                        <div class="documentation__endpoints__params">
+                            {{ range $key, $value := .Types.MapAPITypes}}
+                            <h2 id="{{$key}}" class="documentation__subheader">
+                            <span>{{$key}}</span>
+                            <span class="text-primary">*</span>
+                            </h2>
+                            <table class="documentation__parameters table">
+                                <thead>
+                                    <tr><th>type</th><th>properties</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span>{{$value.Type}}</span>
+                                        </td>
+                                        <td>
+                                            <table class="documentation__parameters table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>name</th>
+                                                        <th>type</th>
+                                                        <th>enum</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {{ range $propKey, $propValue := $value.Properties.Mapdata}}
+                                                    <tr id="{{$propKey}}">
+                                                        <td>
+                                                            <span>{{$propKey}}</span>
+                                                            <span class="text-primary">*</span>
+                                                        </td>
+                                                        <td>{{$propValue.Type}}</td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    {{end}}
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {{end}}
+                        </div>
+                        <div class="documentation__endpoints__examples"></div>
+                    </div>
+                    </section><!--generate types table-->
+                </div>
+            </div>
+        </section>
+    </div>
+    </main>
+<footer class="footer"></footer>
+<script type="text/javascript">(function () {
     //handle example tabs - prevent scrolling to hidden inputs, activate related content on click
     function initTabs() {
-    $('label').click(function (e) {
-    e.preventDefault();
-    var forEl = $(this).attr('for');
-    $('#' + forEl).trigger('click');
-    $('.example__content[data-tab=' + forEl + ']').addClass('is-active').siblings().removeClass('is-active');
-    });
+        $('label').click(function (e) {
+            e.preventDefault();
+            var forEl = $(this).attr('for');
+            $('#' + forEl).trigger('click');
+            $('.example__content[data-tab=' + forEl + ']').addClass('is-active').siblings().removeClass('is-active');
+        });
     }
     function initExpandableExamples() {
-    $('.documentation__endpoints__examples a.examples__toggle').click(function () {
-    toggleExpandExamples($(this).parent());
-    });
+        $('.documentation__endpoints__examples a.examples__toggle').click(function () {
+            toggleExpandExamples($(this).parent());
+        });
     }
     var EXPAND_TIMEOUT_MS = 500;
     function toggleExpandExamples(example) {
-    var isExpanded = example.hasClass('is-expanded');
-    if (example) {
-    if (isExpanded) {
-    example.addClass('is-collapsing').removeClass('is-expanded');
-    setTimeout(function () {
-    example.parent().height('');
-    example.removeClass('is-collapsing');
-    }, EXPAND_TIMEOUT_MS);
-    } else {
-    var endpointHeight = example.outerHeight();
-    example.parent().height(endpointHeight);
-    example.addClass('is-expanded');
+        var isExpanded = example.hasClass('is-expanded');
+        if (example) {
+            if (isExpanded) {
+                example.addClass('is-collapsing').removeClass('is-expanded');
+                setTimeout(function () {
+                    example.parent().height('');
+                    example.removeClass('is-collapsing');
+                }, EXPAND_TIMEOUT_MS);
+            } else {
+                var endpointHeight = example.outerHeight();
+                example.parent().height(endpointHeight);
+                example.addClass('is-expanded');
+            }
+        }
     }
-    }
-    }
+
     //initialize scripts
     $(document).ready(function () {
-    initTabs();
-    initExpandableExamples();
-    $('body').scrollspy({target:'#resources-nav'});
+        initTabs();
+        initExpandableExamples();
+        $('body').scrollspy({target:'#resources-nav'});
+
+        var directory = "{{.directory}}";
+        var project = "{{.name}}";
+        var clientUUID = "{{.clientUUID}}";
+
+        var project = new Project(directory, project, clientUUID);
+        project.connectToWebsocketNotifier();
     });
-    })($);</script>
+    })($);
+</script>
 </body>
 </html>
