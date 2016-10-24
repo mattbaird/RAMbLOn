@@ -251,6 +251,9 @@ func getDirectory(directory string) (string, error) {
 }
 
 func watch(directory, project string) error {
+	var mutex = &sync.Mutex{}
+	mutex.Lock()
+	defer mutex.Unlock()
 	dirAndProject := fmt.Sprintf("%s%s", directory, project)
 	// don't double watch
 	if _, ok := watchers[dirAndProject]; ok {
@@ -271,7 +274,7 @@ func watch(directory, project string) error {
 			case ev := <-watcher.Event:
 
 				sameEvent := ev.Name == event.Name
-				recent := time.Since(lastEventAt) < 100*time.Millisecond
+				recent := time.Since(lastEventAt) < 2*time.Second
 				notifyClients := false
 				switch sameEvent {
 				case true:
@@ -282,6 +285,7 @@ func watch(directory, project string) error {
 					notifyClients = true
 				}
 				if notifyClients {
+					log.Printf("Notifying\n")
 					lastEventAt = time.Now()
 					event = ev
 					for _, project := range projects.projects {

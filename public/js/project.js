@@ -16,7 +16,6 @@ Project.prototype.connect = function() {
         };
 		_this.ws.send(JSON.stringify(messageData));
     }
-    console.log("listening");
     return this;
 };
 
@@ -25,13 +24,22 @@ Project.prototype.disconnect = function() {
 };
 
 Project.prototype.listen = function() {
+    console.log("listening");
+    var _this = this
+
     this.ws.addEventListener("message", function(e) {
-    	this.write(JSON.parse(e.data), 'right');
+        var message = JSON.parse(e.data)
+    	console.log(message);
+        if (message.typ == "update") {
+            location.reload();
+        }
     });
+
     this.ws.addEventListener("close", function(e) {
         console.log("closed connection, reconnecting", e)
-        this.connect()
+        _this.connect()
     });
+
     this.ws.addEventListener("error", function(e) {
         console.log("error for connection", e)
     });

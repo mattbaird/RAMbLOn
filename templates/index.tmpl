@@ -217,7 +217,7 @@
         var clientUUID = "{{.clientUUID}}";
 
         var project = new Project(directory, project, clientUUID);
-
+        project.listen();
         });
     })($);
 </script>
