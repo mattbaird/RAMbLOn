@@ -1,6 +1,8 @@
 # RamblOn
 
-A Go (golang) Interactive RAML v1.0 API to HTML converter.
+A Go (golang) Interactive RAML v1.0 API to HTML Documentation Generator.
+
+RamblOn allows you to view the generated RAML based Documentation in a browser and it will automatically update when you save  your .raml file.
 
 I started using [API Workbench](http://apiworkbench.com/) to edit [RAML 1.0](http://www.raml.org/blogs/raml-10-here) documents and found there was no great way to generate API documentation.
 
