@@ -19,7 +19,7 @@ This project is pretty early, and there is a bunch of work left to do:
 1. RAML v1.0 spec completion
 2. RAML v1.0 validation
 3. SASS setup
-4. Websockets update notification
+4. ~~Websockets update notification~~
 5. Improved CSS
 6. Documentation Generation Mode
 7. Configuration for port, and RAML directories.
