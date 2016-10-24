@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/beatrichartz/martini-sockets"
 	"github.com/go-martini/martini"
+	"github.com/howeyc/fsnotify"
 	"github.com/kr/pretty"
 	"github.com/martini-contrib/render"
 	"github.com/satori/go.uuid"
@@ -12,6 +13,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -20,6 +23,9 @@ import (
 	"github.com/mattbaird/RAMbLOn/ramlv1.0/parserConfig"
 )
 
+var projects *Projects = newProjects()
+var watchers map[string]*fsnotify.Watcher = make(map[string]*fsnotify.Watcher)
+
 func main() {
 	m := martini.Classic()
 	m.Use(martini.Static("public")) // serve from the "static" directory
@@ -27,6 +33,21 @@ func main() {
 	templateFuncs["safe"] = func(s string) template.HTML { return template.HTML(s) }
 	templateFuncs["underscore"] = func(s string) string {
 		return strings.Replace(s, " ", "_", -1)
+	}
+	templateFuncs["uriParameterHighlight"] = func(s string) string {
+		log.Printf("replacing %s\n", s)
+		if len(s) > 0 {
+			temp := s
+			var params = regexp.MustCompile(`\{([^}]+)\}`)
+			replace := params.FindAllString(s, -1)
+			for _, r := range replace {
+				temp = strings.Replace(temp, r, fmt.Sprintf("<b>%s</b>", r), -1)
+			}
+			log.Printf("replaced %s\n", temp)
+			return temp
+		} else {
+			return s
+		}
 	}
 
 	m.Use(render.Renderer(render.Options{
@@ -43,7 +64,7 @@ func main() {
 
 	m.Get("/", func(r render.Render) {
 		ramlFile := "/home/matthew/code/go/src/github.com/AtScaleInc/modeler/api-docs/api.raml"
-		fmt.Printf("parsing:%v\n", ramlFile)
+		log.Printf("parsing:%v\n", ramlFile)
 		var checkRAMLVersion bool
 		var allowIntToBeNum bool
 		var checkOptions = []parser.CheckValueOption{}
@@ -81,7 +102,7 @@ func main() {
 			return
 		}
 		if false {
-			fmt.Printf("json:%v\n", string(jsonBytes))
+			log.Printf("json:%v\n", string(jsonBytes))
 		}
 		r.HTML(200, "index", rootdoc)
 	})
@@ -89,7 +110,7 @@ func main() {
 	m.Get("/browse", func(r render.Render, params martini.Params) {
 		files, err := ioutil.ReadDir("./ramlv1.0/raml-examples/")
 		if err != nil {
-			fmt.Printf("error:%v\n", err)
+			log.Printf("error:%v\n", err)
 		}
 		var directories []os.FileInfo
 		for _, file := range files {
@@ -104,7 +125,7 @@ func main() {
 		directory := params["directory"]
 		files, err := ioutil.ReadDir(fmt.Sprintf("./ramlv1.0/raml-examples/%s", directory))
 		if err != nil {
-			fmt.Printf("error:%v\n", err)
+			log.Printf("error:%v\n", err)
 		}
 		var apis []os.FileInfo
 		for _, file := range files {
@@ -124,12 +145,25 @@ func main() {
 	m.Get("/api/:directory/:name", func(r render.Render, params martini.Params) {
 		directory := params["directory"]
 		name := params["name"]
-		ramlFile := fmt.Sprintf("./ramlv1.0/raml-examples/%s/%s", directory, name)
-		fmt.Printf("file is:%s\n", ramlFile)
+		fullDirectory, err := getDirectory(directory)
+		if err != nil {
+			pretty.Printf("error during PWD lookup:%v\n", err)
+			r.HTML(500, "500", err)
+			return
+		}
+		ramlFile := fmt.Sprintf("%s%s", fullDirectory, name)
+		log.Printf("file is:%s\n", ramlFile)
+		project := Project{directory: fullDirectory}
+		projects.projects = append(projects.projects, &project)
+		err = watch(fullDirectory, name)
+		if err != nil {
+			pretty.Printf("error during File Watch:%v\n", err)
+			r.HTML(500, "500", err)
+			return
+		}
 		var checkRAMLVersion bool
 		var allowIntToBeNum bool
 		var checkOptions = []parser.CheckValueOption{}
-		var err error
 
 		ramlParser := parser.NewParser()
 
@@ -163,7 +197,7 @@ func main() {
 			return
 		}
 		if false {
-			fmt.Printf("json:%v\n", string(jsonBytes))
+			log.Printf("json:%v\n", string(jsonBytes))
 		}
 		u1 := uuid.NewV4()
 		clientUUID := u1.String()
@@ -174,16 +208,18 @@ func main() {
 			"clientUUID": clientUUID})
 	})
 
-	// Create the chat
-	projects := newProjects()
-
 	// This is the sockets connection for the project, it is a json mapping to sockets.
 	m.Get("/sockets/projects/:directory/:project/:clientUUID", sockets.JSON(Message{}), func(params martini.Params,
 		receiver <-chan *Message, sender chan<- *Message, done <-chan bool, disconnect chan<- int, err <-chan error) (int, string) {
-		fmt.Printf("called\n")
+		log.Printf("**** called\n")
 		client := &Client{params["clientUUID"], receiver, sender, done, err, disconnect}
-		r := projects.getProject(params["project"])
-		r.appendClient(client)
+		directory, e := getDirectory(params["directory"])
+		if e != nil {
+			pretty.Printf("error during File Watch:%v\n", err)
+			return 500, e.Error()
+		}
+		projects := projects.getProject(directory)
+		projects.appendClient(client)
 
 		// A single select can be used to do all the messaging
 		for {
@@ -194,15 +230,90 @@ func main() {
 				// The socket connection is already long gone.
 				// Use the error for statistics etc
 			case msg := <-client.in:
-				r.messageClients(client, msg)
+				log.Printf("client message:%v\n", msg)
 			case <-client.done:
-				r.removeClient(client)
+				projects.removeClient(client)
 				return 200, "OK"
 			}
 		}
 	})
 
 	m.Run()
+}
+
+func getDirectory(directory string) (string, error) {
+	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return "", err
+	}
+	fulldir := fmt.Sprintf("%s/ramlv1.0/raml-examples/%s/", rootDir, directory)
+	return fulldir, nil
+}
+
+func watch(directory, project string) error {
+	dirAndProject := fmt.Sprintf("%s%s", directory, project)
+	// don't double watch
+	if _, ok := watchers[dirAndProject]; ok {
+		log.Printf("dir [%s] already being watched\n", dirAndProject)
+		return nil
+	}
+
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return err
+	}
+	// Process events
+	lastEventAt := time.Now()
+	var event *fsnotify.FileEvent = &fsnotify.FileEvent{}
+	go func() {
+		for {
+			select {
+			case ev := <-watcher.Event:
+
+				sameEvent := ev.Name == event.Name
+				recent := time.Since(lastEventAt) < 100*time.Millisecond
+				notifyClients := false
+				switch sameEvent {
+				case true:
+					if !recent {
+						notifyClients = true
+					}
+				case false:
+					notifyClients = true
+				}
+				if notifyClients {
+					lastEventAt = time.Now()
+					event = ev
+					for _, project := range projects.projects {
+						if project.directory == directory {
+							project.messageClients(NewMessage("update", dirAndProject, "updated"))
+						}
+					}
+				}
+			case err := <-watcher.Error:
+				log.Printf("error:%v\n", err)
+			}
+		}
+	}()
+	err = watcher.Watch(dirAndProject)
+	if err != nil {
+		log.Printf("error:%v\n", err)
+		return err
+	}
+	proj := projects.getProject(dirAndProject)
+	if proj != nil {
+		proj.messageClients(NewMessage("confirmation", "system", fmt.Sprintf("watching %s", dirAndProject)))
+	}
+	log.Printf("[%s] being watched\n", dirAndProject)
+	watchers[directory] = watcher
+	return nil
+}
+
+func shutdownWatchers() {
+	for _, watcher := range watchers {
+		watcher.Close()
+	}
+
 }
 
 type Projects struct {
@@ -236,6 +347,10 @@ type Message struct {
 	Text string `json:"text"`
 }
 
+func NewMessage(t, f, text string) *Message {
+	return &Message{Typ: t, From: f, Text: text}
+}
+
 // Get the project for the given directory
 func (p *Projects) getProject(directory string) *Project {
 	p.Lock()
@@ -250,7 +365,6 @@ func (p *Projects) getProject(directory string) *Project {
 	return r
 }
 
-// Add a client to a room
 func (p *Project) appendClient(client *Client) {
 	p.Lock()
 	p.clients = append(p.clients, client)
@@ -277,9 +391,8 @@ func (p *Project) removeClient(client *Client) {
 }
 
 // Message all clients watching the project
-func (p *Project) messageClients(client *Client, msg *Message) {
+func (p *Project) messageClients(msg *Message) {
 	p.Lock()
-	msg.From = client.Name
 	for _, c := range p.clients {
 		c.out <- msg
 	}

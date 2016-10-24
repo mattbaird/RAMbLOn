@@ -18,7 +18,7 @@
             <div class="container-fluid">
                 <h1 title="Protocols: {{.Protocols}}" class="header__title">{{.raml.Title}}</h1>
                 <p class="header__subtitle"></p>
-                <span class="header__uri text-primary">{{.BaseURI}}</span>
+                <span class="header__uri text-primary">{{uriParameterHighlight .raml.BaseURI}}</span>
             </div>
         </header>
         <main>
@@ -56,7 +56,7 @@
                                 <span class="label label-primary">{{$methodKey}}</span>
                             {{$key}}</p>
                             <div class="documentation__endpoints__description">
-                                {{$methodValue.Description}}
+                                ddd{{$methodValue.Description}}
                             </div>
                             <h2 class="documentation__subheader">URI Parameters</h2>
                             <table class="documentation__parameters table table-bordered">
@@ -217,8 +217,8 @@
         var clientUUID = "{{.clientUUID}}";
 
         var project = new Project(directory, project, clientUUID);
-        project.connectToWebsocketNotifier();
-    });
+
+        });
     })($);
 </script>
 </body>
