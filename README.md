@@ -24,6 +24,8 @@ This project is pretty early, and there is a bunch of work left to do:
 6. Documentation Generation Mode
 7. ~~Configuration for port, and RAML directories.~~
 8. Much better directory support :D
+9. Better update model
+10. Error handling in the preview
 
 My approach to RAML Includes has been to first generate the complete document by dereferencing the includes instead of what @tsaikd did with the yaml post processing.
 
@@ -42,3 +44,5 @@ Click on one of the directories to select a RAML project.
 Click on one of the .raml files to select a RAML API Spec.
 
 You should be looking at the base RAML Document that RamblOn generated.
+
+Edit the RAML document, notice it updates in the browser.
