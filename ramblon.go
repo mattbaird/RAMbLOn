@@ -25,8 +25,17 @@ import (
 
 var projects *Projects = newProjects()
 var watchers map[string]*fsnotify.Watcher = make(map[string]*fsnotify.Watcher)
+var configuration Configuration
 
 func main() {
+	var err error
+	configuration, err = ReadConfiguration()
+	if err != nil {
+		log.Printf("Error loading configuration:%v\n", err)
+		os.Exit(-1)
+	}
+	log.Printf("configuration is:%v\n", configuration)
+
 	m := martini.Classic()
 	m.Use(martini.Static("public")) // serve from the "static" directory
 	var templateFuncs map[string]interface{} = make(map[string]interface{})
@@ -108,7 +117,7 @@ func main() {
 	})
 
 	m.Get("/browse", func(r render.Render, params martini.Params) {
-		files, err := ioutil.ReadDir("./ramlv1.0/raml-examples/")
+		files, err := ioutil.ReadDir(configuration.Root)
 		if err != nil {
 			log.Printf("error:%v\n", err)
 		}
@@ -123,7 +132,7 @@ func main() {
 
 	m.Get("/browse/:directory", func(r render.Render, params martini.Params) {
 		directory := params["directory"]
-		files, err := ioutil.ReadDir(fmt.Sprintf("./ramlv1.0/raml-examples/%s", directory))
+		files, err := ioutil.ReadDir(fmt.Sprintf("%s%s", configuration.Root, directory))
 		if err != nil {
 			log.Printf("error:%v\n", err)
 		}
@@ -151,7 +160,7 @@ func main() {
 			r.HTML(500, "500", err)
 			return
 		}
-		ramlFile := fmt.Sprintf("%s%s", fullDirectory, name)
+		ramlFile := fmt.Sprintf("%s/%s", fullDirectory, name)
 		log.Printf("file is:%s\n", ramlFile)
 		project := Project{directory: fullDirectory}
 		projects.projects = append(projects.projects, &project)
@@ -242,12 +251,25 @@ func main() {
 }
 
 func getDirectory(directory string) (string, error) {
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		return "", err
+	retval := directory
+	if strings.HasPrefix(configuration.Root, "./") {
+		rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			return "", err
+		}
+		if strings.HasSuffix(configuration.Root, "/") {
+			retval = fmt.Sprintf("%s/%s%s/", rootDir, configuration.Root[2:], directory)
+		} else {
+			retval = fmt.Sprintf("%s/%s/%s/", rootDir, configuration.Root[2:], directory)
+		}
+	} else {
+		if strings.HasSuffix(configuration.Root, "/") {
+			retval = fmt.Sprintf("%s%s/", configuration.Root, directory)
+		} else {
+			retval = fmt.Sprintf("%s/%s/", configuration.Root, directory)
+		}
 	}
-	fulldir := fmt.Sprintf("%s/ramlv1.0/raml-examples/%s/", rootDir, directory)
-	return fulldir, nil
+	return retval, nil
 }
 
 func watch(directory, project string) error {
