@@ -22,7 +22,7 @@ This project is pretty early, and there is a bunch of work left to do:
 4. ~~Websockets update notification~~
 5. Improved CSS
 6. Documentation Generation Mode
-7. Configuration for port, and RAML directories.
+7. ~~Configuration for port, and RAML directories.~~
 8. Much better directory support :D
 
 My approach to RAML Includes has been to first generate the complete document by dereferencing the includes instead of what @tsaikd did with the yaml post processing.
