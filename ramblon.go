@@ -246,8 +246,7 @@ func main() {
 			}
 		}
 	})
-
-	m.Run()
+	m.RunOnAddr(fmt.Sprintf(":%v", configuration.Port))
 }
 
 func getDirectory(directory string) (string, error) {

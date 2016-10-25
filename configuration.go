@@ -6,6 +6,7 @@ import (
 )
 
 type Configuration struct {
+	Port       int    `json:"port"`
 	Root       string `json:"root"`
 	RamlSuffix string `json:"raml_suffix"`
 }
@@ -20,11 +21,11 @@ func (c *Configuration) Save() error {
 }
 
 func NewBasicConfiguration() Configuration {
-	return Configuration{Root: ".", RamlSuffix: "raml"}
+	return Configuration{Root: ".", Port: 3000, RamlSuffix: "raml"}
 }
 
-func NewConfiguration(root, ramlSuffix string) Configuration {
-	return Configuration{Root: root, RamlSuffix: ramlSuffix}
+func NewConfiguration(root, ramlSuffix string, port int) Configuration {
+	return Configuration{Root: root, RamlSuffix: ramlSuffix, Port: port}
 }
 
 func ReadConfiguration() (Configuration, error) {
