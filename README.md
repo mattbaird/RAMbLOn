@@ -58,6 +58,8 @@ Edit the RAML document, notice it updates in the browser.
 go get github.com/mattbaird/RAMbLOn
 go run ramblon.go g
 ```
-Your options here include --l or --local to generate a file-viewable version
+Your options here include:
 
+--l or --local to generate a file-viewable version
+--o or --outputdir to set the directory you want to output the docs to
 
