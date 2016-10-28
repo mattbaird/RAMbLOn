@@ -21,20 +21,25 @@ This project is pretty early, and there is a bunch of work left to do:
 3. SASS setup
 4. ~~Websockets update notification~~
 5. Improved CSS
-6. Documentation Generation Mode
+6. ~~Documentation Generation Mode~~
 7. ~~Configuration for port, and RAML directories.~~
 8. Much better directory support :D
 9. Better update model
 10. Error handling in the preview
+11. Add Zip generation.
+12. Add toolbar for live preview mode to generate docs, see errors, etc.
 
 My approach to RAML Includes has been to first generate the complete document by dereferencing the includes instead of what @tsaikd did with the yaml post processing.
 
 Pull Requests are encouraged, thanks in advance.
 
 # Getting Started
+
+## To Run the Live Preview Server:
+
 ```bash
 go get github.com/mattbaird/RAMbLOn
-go run ramblon.go
+go run ramblon.go p
 ```
 
 Navigate to [http://localhost:3000/browse](http://localhost:3000/browse)
@@ -46,3 +51,13 @@ Click on one of the .raml files to select a RAML API Spec.
 You should be looking at the base RAML Document that RamblOn generated.
 
 Edit the RAML document, notice it updates in the browser.
+
+
+## To Generate Documentation:
+```bash
+go get github.com/mattbaird/RAMbLOn
+go run ramblon.go g
+```
+Your options here include --l or --local to generate a file-viewable version
+
+
