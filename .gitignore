@@ -25,5 +25,6 @@ _testmain.go
 
 RAMbLOn
 gin-bin
+tmp
 
 /ramlv1.0/raml-examples/atscale
