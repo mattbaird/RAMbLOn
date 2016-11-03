@@ -39,7 +39,8 @@ Pull Requests are encouraged, thanks in advance.
 
 ```bash
 go get github.com/mattbaird/RAMbLOn
-go run ramblon.go p
+go build 
+./RAMbLOn p
 ```
 
 Navigate to [http://localhost:3000/browse](http://localhost:3000/browse)
@@ -56,7 +57,8 @@ Edit the RAML document, notice it updates in the browser.
 ## To Generate Documentation:
 ```bash
 go get github.com/mattbaird/RAMbLOn
-go run ramblon.go g
+go build 
+./RAMbLOn g
 ```
 Your options here include:
 
