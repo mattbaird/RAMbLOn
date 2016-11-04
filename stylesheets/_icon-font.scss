@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'slate';
+  src: url('/fonts/slate.woff2') format('woff2'),
+       url('/fonts/slate.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+%icon {
+  font-family: 'slate';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+}
+
+%icon-exclamation-sign {
+  @extend %icon;
+  content: "\e600";
+}
+%icon-info-sign {
+  @extend %icon;
+  content: "\e602";
+}
+%icon-ok-sign {
+  @extend %icon;
+  content: "\e606";
+}
+%icon-search {
+  @extend %icon;
+  content: "\e607";
+}
