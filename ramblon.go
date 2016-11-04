@@ -205,6 +205,7 @@ func main() {
 					u1 := uuid.NewV4()
 					clientUUID := u1.String()
 					r.HTML(200, "index", map[string]interface{}{
+						"preview":    true,
 						"directory":  directory,
 						"name":       name,
 						"raml":       rootdoc,
