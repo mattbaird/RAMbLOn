@@ -28,3 +28,4 @@ gin-bin
 tmp
 
 /ramlv1.0/raml-examples/atscale
+/node_modules

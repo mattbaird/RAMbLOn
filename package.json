@@ -1,0 +1,37 @@
+{
+  "name": "ramblon",
+  "version": "1.0.0",
+  "description": "An Interactive RAML v1.0 API to HTML Documentation Generator Written in Go (golang)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:sass": "gulp styles",
+    "build:js": "webpack",
+    "watch:sass": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattbaird/RAMbLOn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattbaird/RAMbLOn/issues"
+  },
+  "homepage": "https://github.com/mattbaird/RAMbLOn#readme",
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-preset-es2015": "^6.18.0",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.2",
+    "webpack": "^1.13.3"
+  },
+  "dependencies": {
+    "autobahn": "^0.10.1",
+    "highlight.js": "^9.8.0",
+    "jquery": "^3.1.1",
+    "jquery.tocify": "^1.9.1",
+    "lunr": "^0.7.2"
+  }
+}
