@@ -37,6 +37,7 @@ func main() {
 	}
 	log.Printf("configuration is:%v\n", configuration)
 	var outputdir string
+	var ramlFile string
 	var zipOutput bool
 	var isLocal bool
 	app := cli.NewApp()
@@ -66,48 +67,7 @@ func main() {
 				}))
 
 				m.Get("/", func(r render.Render) {
-					ramlFile := "/home/matthew/code/go/src/github.com/AtScaleInc/modeler/api-docs/api.raml"
-					log.Printf("parsing:%v\n", ramlFile)
-					var checkRAMLVersion bool
-					var allowIntToBeNum bool
-					var checkOptions = []parser.CheckValueOption{}
-					var err error
-
-					ramlParser := parser.NewParser()
-
-					if allowIntToBeNum {
-						checkOptions = append(checkOptions, parser.CheckValueOptionAllowIntegerToBeNumber(true))
-					}
-
-					if err = ramlParser.Config(parserConfig.CheckRAMLVersion, checkRAMLVersion); err != nil {
-						pretty.Printf("error during config[CheckRAMLVersion]:%v", err)
-						r.HTML(500, "500", err)
-						return
-					}
-
-					if err = ramlParser.Config(parserConfig.CheckValueOptions, checkOptions); err != nil {
-						pretty.Printf("error during config[CheckValueOptions]:%v", err)
-						r.HTML(500, "500", err)
-						return
-					}
-
-					rootdoc, err := ramlParser.ParseFile(ramlFile)
-					if err != nil {
-						pretty.Printf("error during ParseFile:%v", err)
-						r.HTML(500, "500", err)
-						return
-					}
-
-					jsonBytes, err := jsonex.MarshalIndent(rootdoc, "", "  ")
-					if err != nil {
-						pretty.Printf("error during MarshalIndent:%v", err)
-						r.HTML(500, "500", err)
-						return
-					}
-					if false {
-						log.Printf("json:%v\n", string(jsonBytes))
-					}
-					r.HTML(200, "index", rootdoc)
+					r.Redirect("/browse")
 				})
 
 				m.Get("/browse", func(r render.Render, params martini.Params) {
@@ -267,6 +227,11 @@ func main() {
 					Usage:       "If serving from local files vs. http server",
 					Destination: &isLocal,
 				},
+				cli.StringFlag{
+					Name:        "raml,r",
+					Usage:       "path to raml file",
+					Destination: &ramlFile,
+				},
 			},
 			Action: func(c *cli.Context) error {
 				outputdir := c.String("outputdir")
@@ -307,8 +272,6 @@ func main() {
 					pretty.Printf("error during config[CheckValueOptions]:%v", err)
 					return err
 				}
-				ramlFile := "/home/matthew/code/go/src/github.com/AtScaleInc/modeler/api-docs/api.raml"
-
 				rootdoc, err := ramlParser.ParseFile(ramlFile)
 				if err != nil {
 					pretty.Printf("error during ParseFile:%v", err)
@@ -318,8 +281,9 @@ func main() {
 				if isLocal {
 					prefix = "."
 				}
+				directory, err := filepath.Abs(filepath.Dir(ramlFile))
 				stuff := map[string]interface{}{
-					"directory":  "/home/matthew/code/go/src/github.com/AtScaleInc/modeler/api-docs/",
+					"directory":  directory,
 					"name":       rootdoc.Name,
 					"raml":       rootdoc,
 					"prefix":     prefix,
