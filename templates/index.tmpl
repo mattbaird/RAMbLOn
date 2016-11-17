@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>       
+  <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge"/>
@@ -12,7 +12,7 @@
   <body class="index">
 
     <div class="tocify-wrapper">
-      <h2><a class="logo">{{.raml.Title}}</a></h2>
+      <h2><a class="logo">{{.raml.Title}} v{{$.raml.Version}}</a></h2>
       <p class="description">{{uriParameterHighlight .raml.BaseURI}}</p>
       <div class="search">
         <input type="text" class="search" id="input-search" placeholder="Search">
@@ -43,7 +43,7 @@
 
         <h3>HTTP Request</h3>
         <p><code class="prettyprint">{{$methodKey}} {{$key}}</code></p>
-
+        {{if $value.URIParameters.MapAPITypes}}
         <h3>URI Parameters</h3>
         <table>
           <thead>
@@ -59,6 +59,7 @@
             {{end}}
           </tbody>
         </table>
+        {{end}}
 
         {{if $methodValue.QueryParameters.Mapdata}}
         <h3 id="query_paramers">Query Parameters</h3>
@@ -97,11 +98,13 @@
         </table>
         {{end}}
         {{end}}
+        {{$.Types}}
+        {{if $.Types.MapAPITypes}}
         <h1 id="all_types">All Types</h1>
-        <p>All defined data types listed below</p>
+        <p>All defined data types are listed below</p>
         <div class="documentation__endpoints">
           <div class="documentation__endpoints__params">
-            {{ range $key, $value := .Types.MapAPITypes}}
+            {{ range $key, $value := $.Types.MapAPITypes}}
             <h2 id="{{$key}}" class="documentation__subheader">
               <span>{{$key}}</span>
               <span class="text-primary">*</span>
@@ -145,6 +148,7 @@
           </div>
           <div class="documentation__endpoints__examples"></div>
         </div>
+        {{end}}
       </div>
     </div>
 

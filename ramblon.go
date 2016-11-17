@@ -7,6 +7,7 @@ import (
 	"github.com/howeyc/fsnotify"
 	"github.com/kr/pretty"
 	"github.com/martini-contrib/render"
+	"github.com/pierrre/archivefile/zip"
 	"github.com/satori/go.uuid"
 	"github.com/tsaikd/KDGoLib/jsonex"
 	"gopkg.in/urfave/cli.v1"
@@ -174,9 +175,8 @@ func main() {
 				})
 
 				// This is the sockets connection for the project, it is a json mapping to sockets.
-				m.Get("/sockets/projects/:directory/:project/:clientUUID", sockets.JSON(Message{}), func(params martini.Params,
+				m.Get("/sockets/projects/:directory/:project/:clientUUID", sockets.JSON(Message{}, websocketOptions()), func(params martini.Params,
 					receiver <-chan *Message, sender chan<- *Message, done <-chan bool, disconnect chan<- int, err <-chan error) (int, string) {
-					log.Printf("**** called\n")
 					client := &Client{params["clientUUID"], receiver, sender, done, err, disconnect}
 					directory, e := getDirectory(params["directory"])
 					if e != nil {
@@ -295,10 +295,43 @@ func main() {
 					return err
 				}
 				// now copy the directories (CSS and IMAGES)
-				err = CopyDir("./public/", "./tmp/")
+				err = CopyDir("./public/", outputdir)
 				if err != nil {
 					pretty.Printf("Error copying static files: %v\n", err)
 					return err
+				}
+				if zipOutput {
+					tmpDir, err := ioutil.TempDir("", "test_zip")
+					if err != nil {
+						panic(err)
+					}
+					defer func() {
+						_ = os.RemoveAll(tmpDir)
+					}()
+
+					outFilePath := filepath.Join(tmpDir, "design-center-api-docs.zip")
+
+					progress := func(archivePath string) {
+						pretty.Printf("Adding %s to archive\n", archivePath)
+					}
+					pretty.Printf("I am going to archive:%v\n", outputdir)
+					if !strings.HasSuffix(outputdir, "/") {
+						outputdir = outputdir + "/"
+					}
+					finalDestination := filepath.Join(outputdir, "design-center-api-docs.zip")
+					// delete if exists:
+					os.Remove(finalDestination)
+
+					err = zip.ArchiveFile(outputdir, outFilePath, progress)
+					if err != nil {
+						panic(err)
+					}
+
+					err = CopyFile(outFilePath, finalDestination)
+					if err != nil {
+						panic(err)
+					}
+					pretty.Printf("Wrote Archive to %s\n", finalDestination)
 				}
 				return nil
 			},
@@ -506,7 +539,6 @@ func (p *Project) messageClients(msg *Message) {
 	defer p.Unlock()
 }
 
-// currently unused
 func websocketOptions() *sockets.Options {
 	// websockets stuff
 	return &sockets.Options{
