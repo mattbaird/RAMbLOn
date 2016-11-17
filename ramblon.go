@@ -218,19 +218,19 @@ func main() {
 					Destination: &outputdir,
 				},
 				cli.BoolFlag{
-					Name:        "zip,z",
+					Name:        "zip, z",
 					Usage:       "Create ZIP of Documentation",
 					Destination: &zipOutput,
 				},
-				cli.BoolFlag{
-					Name:        "local,l",
-					Usage:       "If serving from local files vs. http server",
-					Destination: &isLocal,
-				},
 				cli.StringFlag{
-					Name:        "raml,r",
+					Name:        "raml, r",
 					Usage:       "path to raml file",
 					Destination: &ramlFile,
+				},
+				cli.BoolFlag{
+					Name:        "local, l",
+					Usage:       "If serving from local files vs. http server",
+					Destination: &isLocal,
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -278,7 +278,10 @@ func main() {
 					return err
 				}
 				prefix := ""
+				pretty.Printf("zip:%v\n", zipOutput)
+				pretty.Printf("isLocal:%v\n", isLocal)
 				if isLocal {
+					pretty.Printf("Generating document for local:%v\n", isLocal)
 					prefix = "."
 				}
 				directory, err := filepath.Abs(filepath.Dir(ramlFile))
