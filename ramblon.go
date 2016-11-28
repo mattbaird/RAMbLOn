@@ -346,6 +346,10 @@ func main() {
 
 func getTemplateFuncs() map[string]interface{} {
 	var templateFuncs map[string]interface{} = make(map[string]interface{})
+	templateFuncs["toUpper"] = func(s string) string {
+		return strings.ToUpper(s)
+	}
+
 	templateFuncs["safe"] = func(s string) template.HTML { return template.HTML(s) }
 	templateFuncs["underscore"] = func(s string) string {
 		return strings.Replace(s, " ", "_", -1)
@@ -379,7 +383,7 @@ func getTemplateFuncs() map[string]interface{} {
 		for _, k := range displayNames {
 			log.Printf("key is :%v\n", k)
 			key := displayNameToKeys[k]
-			values = append(values, container{Method: k, Value: m[key]})
+			values = append(values, container{Method: key, Value: m[key]})
 		}
 		return values
 	}

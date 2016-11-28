@@ -27,12 +27,11 @@
 
         {{ range $container := sortedMap .raml.Resources}}
         {{$key := $container.Method}}
+
         {{$value := $container.Value}}
         <h1 id="{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</h1>
         <p>{{$value.Description}}</p>
         {{ range $methodKey, $methodValue := $value.Methods}}
-
-        <p>{{$methodValue.Description}}</p>
 
         {{ range $responseKey, $responseValue := $methodValue.Responses}}
             {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
@@ -43,7 +42,8 @@
             {{end}}
         {{end}}
 
-        <h3>HTTP Request</h3>
+        <h3>HTTP Request: {{toUpper $methodKey}}</h3>
+        <p>{{$methodValue.Description}}</p>
         <p><code class="prettyprint"><b>{{$methodKey}}</b> {{$key}}</code></p>
         {{if $value.URIParameters.MapAPITypes}}
         <h3>URI Parameters</h3>
