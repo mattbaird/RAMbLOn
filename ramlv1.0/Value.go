@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -207,7 +206,6 @@ type UriParameter struct {
 func (t *Value) get(name string) UriParameter {
 	v, ok := t.Map[name]
 	if ok {
-		fmt.Printf("%+v\n", v)
 		t := v.Map["type"]
 		d := v.Map["description"]
 		return UriParameter{Description: d.String, Type: t.String}

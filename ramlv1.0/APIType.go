@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -36,7 +35,6 @@ func (t *APITypes) UnmarshalYAMLTag(unmarshaler func(interface{}) error, tag str
 	if tag == "!include" {
 		t.includeTag = true
 	}
-	fmt.Printf("tag is:%v value is:%v\n", tag, t.Value)
 	if err = unmarshaler(&t.Value); err == nil && !t.Value.IsEmpty() {
 		return
 	}

@@ -156,7 +156,7 @@ func (t parserImpl) ParseData(data []byte, workdir string) (rootdoc RootDocument
 	return
 }
 
-func (t parserImpl) ResolveIncludes(doc RootDocument) (rootdoc RootDocument, err error) {
+func (t *parserImpl) ResolveIncludes(doc RootDocument) (rootdoc RootDocument, err error) {
 	if doc.Types.includeTag {
 		fpath := filepath.Join(doc.WorkingDirectory, doc.Types.Value.String)
 		fmt.Printf("fillTypes includeTag:%v\n", fpath)
@@ -168,10 +168,10 @@ func (t parserImpl) ResolveIncludes(doc RootDocument) (rootdoc RootDocument, err
 			fmt.Printf("***************** unmarshaling\n")
 			//			doc.Types.MapAPITypes = MapAPITypes{}
 			err = yaml.Unmarshal(fdata, &doc.Types)
-			fmt.Printf("fdata:%s\n", string(fdata))
 			if err != nil {
 				fmt.Printf("error unmarshalling:%v\n", err)
 			}
+
 		} else {
 			fmt.Printf("Error:%v\n", err)
 		}
