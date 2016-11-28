@@ -17,6 +17,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -364,7 +365,30 @@ func getTemplateFuncs() map[string]interface{} {
 			return s
 		}
 	}
+
+	// need to sort by displayName
+	templateFuncs["sortedMap"] = func(m parser.Resources) []container {
+		var displayNameToKeys map[string]string = map[string]string{}
+		var displayNames []string
+		var values []container
+		for k, v := range m {
+			displayNameToKeys[v.DisplayName] = k
+			displayNames = append(displayNames, v.DisplayName)
+		}
+		sort.Strings(displayNames)
+		for _, k := range displayNames {
+			log.Printf("key is :%v\n", k)
+			key := displayNameToKeys[k]
+			values = append(values, container{Method: k, Value: m[key]})
+		}
+		return values
+	}
 	return templateFuncs
+}
+
+type container struct {
+	Method string
+	Value  interface{}
 }
 
 func getDirectory(directory string) (string, error) {

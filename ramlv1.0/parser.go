@@ -165,9 +165,13 @@ func (t parserImpl) ResolveIncludes(doc RootDocument) (rootdoc RootDocument, err
 		if err == nil {
 			// unmarshal the types
 			// MBAIRD: this is wrong,
-			fmt.Printf("unmarshaling\n")
-			doc.Types.MapAPITypes = MapAPITypes{}
-			err = yaml.Unmarshal(fdata, &doc.Types.MapAPITypes)
+			fmt.Printf("***************** unmarshaling\n")
+			//			doc.Types.MapAPITypes = MapAPITypes{}
+			err = yaml.Unmarshal(fdata, &doc.Types)
+			fmt.Printf("fdata:%s\n", string(fdata))
+			if err != nil {
+				fmt.Printf("error unmarshalling:%v\n", err)
+			}
 		} else {
 			fmt.Printf("Error:%v\n", err)
 		}

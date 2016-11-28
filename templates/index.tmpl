@@ -25,7 +25,9 @@
       <div class="dark-box"></div>
       <div class="content">
 
-        {{ range $key, $value := .raml.Resources}}
+        {{ range $container := sortedMap .raml.Resources}}
+        {{$key := $container.Method}}
+        {{$value := $container.Value}}
         <h1 id="{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</h1>
         <p>{{$value.Description}}</p>
         {{ range $methodKey, $methodValue := $value.Methods}}
@@ -42,7 +44,7 @@
         {{end}}
 
         <h3>HTTP Request</h3>
-        <p><code class="prettyprint">{{$methodKey}} {{$key}}</code></p>
+        <p><code class="prettyprint"><b>{{$methodKey}}</b> {{$key}}</code></p>
         {{if $value.URIParameters.MapAPITypes}}
         <h3>URI Parameters</h3>
         <table>
