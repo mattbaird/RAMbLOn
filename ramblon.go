@@ -353,6 +353,14 @@ func getTemplateFuncs() map[string]interface{} {
 	templateFuncs["properties"] = func(v parser.Value) map[string]*parser.Value {
 		return v.Map["properties"].Map
 	}
+	templateFuncs["mapValue"] = func(v parser.Value, key string) string {
+		if val, ok := v.Map[key]; ok {
+			return val.String
+		} else {
+			return ""
+		}
+	}
+
 	templateFuncs["example"] = func(v parser.Value) string {
 		var jsonStr string = ""
 		if val, ok := v.Map["example"]; ok {

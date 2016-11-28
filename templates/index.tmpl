@@ -109,8 +109,8 @@
 
             <h2 id="{{$typeKey}}">
               <span>{{$typeKey}} ({{$typeValue.Type}})</span>
-              <span class="text-primary">*</span>
             </h2>
+            <p>{{mapValue $typeValue "description"}}</p>
 
             <pre><code class="hljs json">{{example $typeValue}}</code></pre>
 
