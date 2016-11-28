@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/beatrichartz/martini-sockets"
 	"github.com/go-martini/martini"
@@ -349,7 +350,21 @@ func getTemplateFuncs() map[string]interface{} {
 	templateFuncs["toUpper"] = func(s string) string {
 		return strings.ToUpper(s)
 	}
-
+	templateFuncs["properties"] = func(v parser.Value) map[string]*parser.Value {
+		return v.Map["properties"].Map
+	}
+	templateFuncs["example"] = func(v parser.Value) string {
+		var jsonStr string = ""
+		if val, ok := v.Map["example"]; ok {
+			jsonBytes, err := json.MarshalIndent(val, "", "\t")
+			//jsonBytes, err := val.MarshalJSON()
+			if err != nil {
+				return fmt.Sprintf("Error Marshalling Example:%v\n", err)
+			}
+			jsonStr = string(jsonBytes)
+		}
+		return jsonStr
+	}
 	templateFuncs["safe"] = func(s string) template.HTML { return template.HTML(s) }
 	templateFuncs["underscore"] = func(s string) string {
 		return strings.Replace(s, " ", "_", -1)
@@ -381,7 +396,6 @@ func getTemplateFuncs() map[string]interface{} {
 		}
 		sort.Strings(displayNames)
 		for _, k := range displayNames {
-			log.Printf("key is :%v\n", k)
 			key := displayNameToKeys[k]
 			values = append(values, container{Method: key, Value: m[key]})
 		}

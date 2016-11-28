@@ -35,9 +35,11 @@
 
         {{ range $responseKey, $responseValue := $methodValue.Responses}}
             {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
-              {{if $bodyValue.Example.Value.String}}
-                <blockquote><p>{{$responseKey}} Response Body</p></blockquote>
-                <pre><code>{{$bodyValue.Example.Value.String}}</code></pre>
+              {{if $bodyValue}}
+                {{if $bodyValue.Example.Value.String}}
+                  <blockquote><p>{{$responseKey}} Response Body</p></blockquote>
+                  <pre><code>{{$bodyValue.Example.Value.String}}</code></pre>
+                {{end}}
               {{end}}
             {{end}}
         {{end}}
@@ -100,56 +102,42 @@
         </table>
         {{end}}
         {{end}}
-        {{$.Types}}
-        {{if $.Types.MapAPITypes}}
+        {{if $.raml.Types}}
         <h1 id="all_types">All Types</h1>
         <p>All defined data types are listed below</p>
-        <div class="documentation__endpoints">
-          <div class="documentation__endpoints__params">
-            {{ range $key, $value := $.Types.MapAPITypes}}
-            <h2 id="{{$key}}" class="documentation__subheader">
-              <span>{{$key}}</span>
+          {{ range $typeKey, $typeValue := $.raml.Types.Value.Map}}
+
+            <h2 id="{{$typeKey}}">
+              <span>{{$typeKey}} ({{$typeValue.Type}})</span>
               <span class="text-primary">*</span>
             </h2>
+
+            <pre><code class="hljs json">{{example $typeValue}}</code></pre>
+
+            <h3>Properties</h3>
             <table class="documentation__parameters table">
               <thead>
-                <tr><th>type</th><th>properties</th></tr>
+                <tr>
+                  <th>name</th>
+                  <th>type</th>
+                  <th>enum</th>
+                </tr>
               </thead>
               <tbody>
+                {{ range $propKey, $propValue := properties $typeValue}}
                 <tr>
                   <td>
-                    <span>{{$value.Type}}</span>
+                    <span>{{$propKey}}</span>
+                    <span class="text-primary">*</span>
                   </td>
-                  <td>
-                    <table class="documentation__parameters table">
-                      <thead>
-                        <tr>
-                          <th>name</th>
-                          <th>type</th>
-                          <th>enum</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {{ range $propKey, $propValue := $value.Properties.Mapdata}}
-                        <tr>
-                          <td>
-                            <span>{{$propKey}}</span>
-                            <span class="text-primary">*</span>
-                          </td>
-                          <td>{{$propValue.Type}}</td>
-                          <td>-</td>
-                        </tr>
-                        {{end}}
-                      </tbody>
-                    </table>
-                  </td>
+                  <td>{{$propValue.Type}}</td>
+                  <td>-</td>
                 </tr>
+                {{end}}
               </tbody>
             </table>
-            {{end}}
-          </div>
-          <div class="documentation__endpoints__examples"></div>
-        </div>
+
+          {{end}}
         {{end}}
       </div>
     </div>
