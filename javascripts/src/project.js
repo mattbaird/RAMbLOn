@@ -8,7 +8,7 @@ class Project {
   }
 
   connect() {
-    this.ws = new WebSocket('ws://localhost:3001/sockets/projects/'+this.directory+'/'+this.name+'/' + this.clientUUID);
+    this.ws = new WebSocket('ws://localhost:'+location.port+'/sockets/projects/'+this.directory+'/'+this.name+'/' + this.clientUUID);
     this.ws.onopen = e => {
       var messageData = {
         typ: "notification",

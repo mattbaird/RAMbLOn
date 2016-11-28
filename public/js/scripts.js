@@ -1999,13 +1999,13 @@
 	 *       this.field('title', 10)
 	 *       this.field('tags', 100)
 	 *       this.field('body')
-	 *       
+	 *
 	 *       this.ref('cid')
-	 *       
+	 *
 	 *       this.pipeline.add(function () {
 	 *         // some custom pipeline function
 	 *       })
-	 *       
+	 *
 	 *     })
 	 *
 	 * @param {Function} config A function that will be called with the new instance
@@ -4131,7 +4131,7 @@
 	                    var wordNode = node.splitText(capturePos);
 	                    wordNode.splitText(match[1].length);
 
-	                    var wordClone = wordNode.cloneNode(true);                    
+	                    var wordClone = wordNode.cloneNode(true);
 	                    highlight.appendChild(wordClone);
 	                    wordNode.parentNode.replaceChild(highlight, wordNode);
 	                    return 1; //skip added node in parent
@@ -4172,7 +4172,7 @@
 	        };
 
 	        jQuery.extend(settings, options);
-	        
+
 	        if (typeof words === 'string') {
 	          words = [words];
 	        }
@@ -4195,7 +4195,7 @@
 	            pattern = settings.wordsBoundary + pattern + settings.wordsBoundary;
 	        }
 	        var re = new RegExp(pattern, flag);
-	        
+
 	        return this.each(function () {
 	            jQuery.highlight(this, re, settings.element, settings.className);
 	        });
@@ -4232,7 +4232,7 @@
 	    value: function connect() {
 	      var _this = this;
 
-	      this.ws = new WebSocket('ws://localhost:3001/sockets/projects/' + this.directory + '/' + this.name + '/' + this.clientUUID);
+	      this.ws = new WebSocket('ws://localhost:'+location.port+'/sockets/projects/' + this.directory + '/' + this.name + '/' + this.clientUUID);
 	      this.ws.onopen = function (e) {
 	        var messageData = {
 	          typ: "notification",
