@@ -46,7 +46,7 @@
 
         <h3>HTTP Request: {{toUpper $methodKey}}</h3>
         <p>{{$methodValue.Description}}</p>
-        <p><code class="prettyprint"><b>{{$methodKey}}</b> {{$key}}</code></p>
+        <p><code class="prettyprint"><b>{{$methodKey}}</b> <i>{{$.raml.BaseURI}}</i>{{$key}}</code></p>
         {{if $value.URIParameters.MapAPITypes}}
         <h3>URI Parameters</h3>
         <table>
