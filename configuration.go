@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 )
 
 type Configuration struct {
@@ -12,6 +13,10 @@ type Configuration struct {
 }
 
 func (c *Configuration) Save() error {
+	if !strings.HasSuffix(c.Root, "/") {
+		c.Root = c.Root + "/"
+	}
+
 	file, err := json.Marshal(c)
 	if err != nil {
 		return err
@@ -35,5 +40,10 @@ func ReadConfiguration() (Configuration, error) {
 	}
 	var conf Configuration
 	err = json.Unmarshal(file, &conf)
+	if err == nil {
+		if !strings.HasSuffix(conf.Root, "/") {
+			conf.Root = conf.Root + "/"
+		}
+	}
 	return conf, err
 }
