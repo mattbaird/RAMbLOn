@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Jumpscale/go-raml/raml"
 	"github.com/beatrichartz/martini-sockets"
 	"github.com/go-martini/martini"
 	"github.com/howeyc/fsnotify"
@@ -148,8 +149,8 @@ func main() {
 						r.HTML(500, "500", err)
 						return
 					}
-
-					rootdoc, err := ramlParser.ParseFile(ramlFile)
+					rootdoc := new(raml.APIDefinition)
+					err = raml.ParseFile(ramlFile, rootdoc)
 					if err != nil {
 						pretty.Printf("error during ParseFile:%v", err)
 						r.HTML(500, "500", err)
@@ -274,7 +275,8 @@ func main() {
 					pretty.Printf("error during config[CheckValueOptions]:%v", err)
 					return err
 				}
-				rootdoc, err := ramlParser.ParseFile(ramlFile)
+				rootdoc := new(raml.APIDefinition)
+				err = raml.ParseFile(ramlFile, rootdoc)
 				if err != nil {
 					pretty.Printf("error during ParseFile:%v", err)
 					return err
@@ -289,7 +291,7 @@ func main() {
 				directory, err := filepath.Abs(filepath.Dir(ramlFile))
 				stuff := map[string]interface{}{
 					"directory":  directory,
-					"name":       rootdoc.Name,
+					"name":       rootdoc.Title,
 					"raml":       rootdoc,
 					"prefix":     prefix,
 					"clientUUID": "na"}
@@ -394,7 +396,7 @@ func getTemplateFuncs() map[string]interface{} {
 	}
 
 	// need to sort by displayName
-	templateFuncs["sortedMap"] = func(m parser.Resources) []container {
+	templateFuncs["sortedMap"] = func(m map[string]raml.Resource) []container {
 		var displayNameToKeys map[string]string = map[string]string{}
 		var displayNames []string
 		var values []container

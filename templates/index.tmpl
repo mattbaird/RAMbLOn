@@ -26,117 +26,114 @@
       <div class="content">
 
         {{ range $container := sortedMap .raml.Resources}}
-        {{$key := $container.Method}}
+          {{$key := $container.Method}}
+          {{$value := $container.Value}}
+          <h1 id="{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</h1>
+          <p>{{$value.Description}}</p>
+          {{ range $methodValue := $value.Methods}}
 
-        {{$value := $container.Value}}
-        <h1 id="{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</h1>
-        <p>{{$value.Description}}</p>
-        {{ range $methodKey, $methodValue := $value.Methods}}
-
-        {{ range $responseKey, $responseValue := $methodValue.Responses}}
-            {{ range $bodyKey, $bodyValue := $responseValue.Bodies}}
-              {{if $bodyValue}}
-                {{if $bodyValue.Example.Value.String}}
-                  <blockquote><p>{{$responseKey}} Response Body</p></blockquote>
-                  <pre><code>{{$bodyValue.Example.Value.String}}</code></pre>
-                {{end}}
-              {{end}}
+          {{ range $responseKey, $responseValue := $methodValue.Responses}}
+            {{if $responseValue.Bodies.Example}}
+              <blockquote><p>{{$responseKey}} Response Body</p></blockquote>
+              <pre><code>{{$responseValue.Bodies.Example}}</code></pre>
             {{end}}
-        {{end}}
+          {{end}}
 
-        <h3>HTTP Request: {{toUpper $methodKey}}</h3>
-        <p>{{$methodValue.Description}}</p>
-        <p><code class="prettyprint"><b>{{$methodKey}}</b> <i>{{$.raml.BaseURI}}</i>{{$key}}</code></p>
-        {{if $value.URIParameters.MapAPITypes}}
-        <h3>URI Parameters</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{range $uriParamKey, $uriParamValue := $value.URIParameters.MapAPITypes}}
-            <tr><td>{{$uriParamKey}}</td><td>{{$uriParamValue.Type}}</td><td>{{$uriParamValue.Description}}</td></tr>
-            {{end}}
-          </tbody>
-        </table>
-        {{end}}
-
-        {{if $methodValue.QueryParameters.Mapdata}}
-        <h3 id="query_paramers">Query Parameters</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{range $queryParamKey, $queryParamValue := $methodValue.QueryParameters.Mapdata}}
-            <tr><td>{{$queryParamKey}}</td><td>{{$queryParamValue.Type}}</td><td>{{$queryParamValue.Description}}</td></tr>
-            {{end}}
-          </tbody>
-        </table>
-        {{end}}
-
-        <h3>Responses</h3>
-        <table>
-          <thead>
-            <tr>
-              <th nowrap>Code</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{ range $responseKey, $responseValue := $methodValue.Responses}}
+          <h3>HTTP Request: {{toUpper $methodValue.Name}}</h3>
+          <p>{{$methodValue.Description}}</p>
+          <p><code class="prettyprint"><b>{{$methodValue.Name}}</b> <i>{{$.raml.BaseURI}}</i>{{$key}}</code></p>
+          {{if $value.URIParameters}}
+          <h3>URI Parameters</h3>
+          <table>
+            <thead>
               <tr>
-                <td>{{$responseKey}}</td>
-                <td>{{$responseValue.Description}}</td>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
               </tr>
-            {{end}}
-          </tbody>
-        </table>
-        {{end}}
+            </thead>
+            <tbody>
+              {{range $uriParamKey, $uriParamValue := $value.URIParameters}}
+              <tr><td>{{$uriParamKey}}</td><td>{{$uriParamValue.Type}}</td><td>{{$uriParamValue.Description}}</td></tr>
+              {{end}}
+            </tbody>
+          </table>
+          {{end}}
+
+          {{if $methodValue.QueryParameters}}
+          <h3 id="query_paramers">Query Parameters</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range $queryParamKey, $queryParamValue := $methodValue.QueryParameters}}
+              <tr><td>{{$queryParamKey}}</td><td>{{$queryParamValue.Type}}</td><td>{{$queryParamValue.Description}}</td></tr>
+              {{end}}
+            </tbody>
+          </table>
+          {{end}}
+
+          <h3>Responses</h3>
+          <table>
+            <thead>
+              <tr>
+                <th nowrap>Code</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{ range $responseKey, $responseValue := $methodValue.Responses}}
+                <tr>
+                  <td>{{$responseKey}}</td>
+                  <td>{{$responseValue.Description}}</td>
+                </tr>
+              {{end}}
+            </tbody>
+          </table>
+          {{end}}
         {{end}}
         {{if $.raml.Types}}
         <h1 id="all_types">All Types</h1>
         <p>All defined data types are listed below</p>
-          {{ range $typeKey, $typeValue := $.raml.Types.Value.Map}}
 
-            <h2 id="{{$typeKey}}">
-              <span>{{$typeKey}} ({{$typeValue.Type}})</span>
-            </h2>
-            <p>{{mapValue $typeValue "description"}}</p>
+          {{if $.raml.Types}}
+            {{ range $typeKey, $typeValue := $.raml.Types}}
+              <h2 id="{{$typeKey}}">
+                <span>{{$typeKey}} ({{$typeValue.Type}})</span>
+              </h2>
+              <p>{{$typeValue.Description}}</p>
 
-            <pre><code class="hljs json">{{example $typeValue}}</code></pre>
+              <pre><code class="hljs json">{{$typeValue.Example}}</code></pre>
 
-            <h3>Properties</h3>
-            <table class="documentation__parameters table">
-              <thead>
-                <tr>
-                  <th>name</th>
-                  <th>type</th>
-                  <th>enum</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{ range $propKey, $propValue := properties $typeValue}}
-                <tr>
-                  <td>
-                    <span>{{$propKey}}</span>
-                    <span class="text-primary">*</span>
-                  </td>
-                  <td>{{$propValue.Type}}</td>
-                  <td>-</td>
-                </tr>
-                {{end}}
-              </tbody>
-            </table>
+              <h3>Properties</h3>
+              <table class="documentation__parameters table">
+                <thead>
+                  <tr>
+                    <th>name</th>
+                    <th>type</th>
+                    <th>enum</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{ range $propKey, $propValue := $typeValue.Properties}}
+                  <tr>
+                    <td>
+                      <span>{{$propKey}}</span>
+                      <span class="text-primary">*</span>
+                    </td>
+                    <td>{{$propValue}}</td>
+                    <td>-</td>
+                  </tr>
+                  {{end}}
+                </tbody>
+              </table>
 
+            {{end}}
           {{end}}
         {{end}}
       </div>
