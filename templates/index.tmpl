@@ -31,10 +31,17 @@
           <h1 id="{{$value.DisplayName | underscore}}">{{$value.DisplayName}}</h1>
           <p>{{$value.Description}}</p>
           {{ range $methodValue := $value.Methods}}
+          {{if $methodValue.Bodies.Example}}
+            <blockquote><p>Request Body</p></blockquote>
+            <pre><code>
+              {{$methodValue.Bodies.Example}}
+            </code></pre>
+          {{end}}
 
           {{ range $responseKey, $responseValue := $methodValue.Responses}}
             {{if $responseValue.Bodies.Example}}
               <blockquote><p>{{$responseKey}} Response Body</p></blockquote>
+
               <pre><code>{{$responseValue.Bodies.Example}}</code></pre>
             {{end}}
           {{end}}
