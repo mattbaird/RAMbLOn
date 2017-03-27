@@ -33,9 +33,7 @@
           {{ range $methodValue := $value.Methods}}
           {{if $methodValue.Bodies.Example}}
             <blockquote><p>Request Body</p></blockquote>
-            <pre><code>
-              {{$methodValue.Bodies.Example}}
-            </code></pre>
+            <pre><code>{{$methodValue.Bodies.Example}}</code></pre>
           {{end}}
 
           {{ range $responseKey, $responseValue := $methodValue.Responses}}
