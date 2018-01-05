@@ -166,7 +166,12 @@ func main() {
 					if false {
 						log.Printf("json:%v\n", string(jsonBytes))
 					}
-					u1 := uuid.NewV4()
+					u1, err := uuid.NewV4()
+					if err != nil {
+						pretty.Printf("error generating uuid:%v", err)
+						r.HTML(500, "500", err)
+						return
+					}
 					clientUUID := u1.String()
 					r.HTML(200, "index", map[string]interface{}{
 						"preview":    true,
