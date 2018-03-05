@@ -166,7 +166,7 @@ func main() {
 					if false {
 						log.Printf("json:%v\n", string(jsonBytes))
 					}
-					u1 := uuid.NewV4()
+					u1, _ := uuid.NewV4()
 					clientUUID := u1.String()
 					r.HTML(200, "index", map[string]interface{}{
 						"preview":    true,
