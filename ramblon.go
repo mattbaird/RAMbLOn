@@ -122,6 +122,7 @@ func main() {
 					log.Printf("file is:%s\n", ramlFile)
 					project := Project{directory: fullDirectory}
 					projects.projects = append(projects.projects, &project)
+					shutdownWatchers() // reset them so they don't eat all file handles
 					err = watch(fullDirectory, name)
 					if err != nil {
 						pretty.Printf("error during File Watch:%v\n", err)
@@ -348,7 +349,7 @@ func main() {
 }
 
 func getTemplateFuncs() map[string]interface{} {
-	var templateFuncs map[string]interface{} = make(map[string]interface{})
+	var templateFuncs = make(map[string]interface{})
 	templateFuncs["toUpper"] = func(s string) string {
 		return strings.ToUpper(s)
 	}
@@ -358,13 +359,12 @@ func getTemplateFuncs() map[string]interface{} {
 	templateFuncs["mapValue"] = func(v parser.Value, key string) string {
 		if val, ok := v.Map[key]; ok {
 			return val.String
-		} else {
-			return ""
 		}
+		return ""
 	}
 
 	templateFuncs["example"] = func(v parser.Value) string {
-		var jsonStr string = ""
+		var jsonStr string
 		if val, ok := v.Map["example"]; ok {
 			jsonBytes, err := json.MarshalIndent(val, "", "\t")
 			//jsonBytes, err := val.MarshalJSON()
@@ -390,14 +390,13 @@ func getTemplateFuncs() map[string]interface{} {
 			}
 			log.Printf("replaced %s\n", temp)
 			return temp
-		} else {
-			return s
 		}
+		return s
 	}
 
 	// need to sort by displayName
 	templateFuncs["sortedMap"] = func(m map[string]raml.Resource) []container {
-		var displayNameToKeys map[string]string = map[string]string{}
+		var displayNameToKeys = map[string]string{}
 		var displayNames []string
 		var values []container
 		for k, v := range m {
@@ -463,30 +462,33 @@ func watch(directory, project string) error {
 		for {
 			select {
 			case ev := <-watcher.Event:
-
-				sameEvent := ev.Name == event.Name
-				recent := time.Since(lastEventAt) < 2*time.Second
-				notifyClients := false
-				switch sameEvent {
-				case true:
-					if !recent {
+				if ev != nil && event != nil {
+					sameEvent := ev.Name == event.Name
+					recent := time.Since(lastEventAt) < 2*time.Second
+					notifyClients := false
+					switch sameEvent {
+					case true:
+						if !recent {
+							notifyClients = true
+						}
+					case false:
 						notifyClients = true
 					}
-				case false:
-					notifyClients = true
-				}
-				if notifyClients {
-					log.Printf("Notifying\n")
-					lastEventAt = time.Now()
-					event = ev
-					for _, project := range projects.projects {
-						if project.directory == directory {
-							project.messageClients(NewMessage("update", dirAndProject, "updated"))
+					if notifyClients {
+						log.Printf("Notifying\n")
+						lastEventAt = time.Now()
+						event = ev
+						for _, project := range projects.projects {
+							if project.directory == directory {
+								project.messageClients(NewMessage("update", dirAndProject, "updated"))
+							}
 						}
 					}
 				}
 			case err := <-watcher.Error:
-				log.Printf("error:%v\n", err)
+				if err != nil {
+					log.Printf("error:%v\n", err)
+				}
 			}
 		}
 	}()
