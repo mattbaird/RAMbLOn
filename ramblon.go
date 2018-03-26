@@ -189,7 +189,6 @@ func main() {
 					}
 					projects := projects.getProject(directory)
 					projects.appendClient(client)
-
 					// A single select can be used to do all the messaging
 					for {
 						select {
@@ -440,17 +439,24 @@ func getDirectory(directory string) (string, error) {
 	return retval, nil
 }
 
+var watching = false
+var quit = make(chan bool)
+
 func watch(directory, project string) error {
 	var mutex = &sync.Mutex{}
 	mutex.Lock()
 	defer mutex.Unlock()
+	// quit if already running
+	if watching {
+		quit <- true
+		watching = false
+	}
 	dirAndProject := fmt.Sprintf("%s%s", directory, project)
 	// don't double watch
 	if _, ok := watchers[dirAndProject]; ok {
 		log.Printf("dir [%s] already being watched\n", dirAndProject)
 		return nil
 	}
-
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return err
@@ -459,8 +465,12 @@ func watch(directory, project string) error {
 	lastEventAt := time.Now()
 	var event *fsnotify.FileEvent = &fsnotify.FileEvent{}
 	go func() {
+		watching = true
 		for {
+			time.Sleep(10 * time.Millisecond)
 			select {
+			case <-quit:
+				return
 			case ev := <-watcher.Event:
 				if ev != nil && event != nil {
 					sameEvent := ev.Name == event.Name
@@ -503,6 +513,7 @@ func watch(directory, project string) error {
 	}
 	log.Printf("[%s] being watched\n", dirAndProject)
 	watchers[directory] = watcher
+	watching = true
 	return nil
 }
 
